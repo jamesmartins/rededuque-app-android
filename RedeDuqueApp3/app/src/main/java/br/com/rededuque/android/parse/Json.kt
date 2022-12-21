@@ -28,12 +28,12 @@ object Json {
         }
     }
 
-    fun getLoggedUser(RD_userId : String): String{
+    fun getLoggedUser(RD_userId : String, RD_userCompany: Int ): String{
         try {
             var json = JSONStringer()
                 .`object`()
                     .key("RD_userId").value(RD_userId)
-                    .key("RD_userCompany").value(PROJECT_ID)
+                    .key("RD_userCompany").value(RD_userCompany)
                 .endObject()
                 .toString()
         return json

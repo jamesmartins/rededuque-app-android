@@ -8,5 +8,6 @@
     <string name="no_google_playservice_available">No Google Playservice found. Please install it.</string>
     <string name="msg_location_service_not_started">Location Tracking Not Started</string>
     <string name="msg_location_service_started">Location Tracking Started</string>
+    <string name="Error_With_RedeDuque">Error Rede Duque..:</string>
 
 </resources>

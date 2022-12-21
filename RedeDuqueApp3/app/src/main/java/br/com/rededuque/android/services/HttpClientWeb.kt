@@ -1,6 +1,7 @@
-package br.com.marka.android.riobel.services
+package br.com.rededuque.android.services
 
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.io.IOException
 
 
@@ -8,9 +9,9 @@ class HttpClientWeb{
 
     private val client = OkHttpClient()
 
-    val JSON = MediaType.parse("application/json; charset=utf-8")
+    val JSON = "application/json; charset=utf-8".toMediaTypeOrNull()
     companion object {
-        val JSONType = MediaType.parse("application/json; charset=utf-8")
+        val JSONType = "application/json; charset=utf-8".toMediaTypeOrNull()
     }
 
     @Throws(IOException::class)
@@ -20,7 +21,7 @@ class HttpClientWeb{
             .build()
 
         val response = client.newCall(request).execute()
-        return response.body()!!.string()
+        return response.body!!.string()
     }
 
     @Throws(IOException::class)
@@ -31,26 +32,14 @@ class HttpClientWeb{
             .post(body)
             .build()
         val response = client.newCall(request).execute()
-        return response.body()!!.string()
+        return response.body!!.string()
     }
 
-    
-//    fun postAsync(method: Int, url: String, json: String, callback: Callback): Call {
-//        val body = json.toRequestBody(JSON)
-//        val request = Request.Builder()
-//            .method(method.toString(), body)
-//            .url(url)
-//            .post(body)
-//            .build()
-//        val call = client.newCall(request)
-//        call.enqueue(callback)
-//        return call
-//    }
 
     @Throws(IOException::class)
     fun postWithHeaders(url : String, authorizationCode: String, cookie : String): String{
         val client = client.newBuilder().build()
-        val mediaType = MediaType.parse("text/plain")
+        val mediaType = "text/plain".toMediaTypeOrNull()
         val body = RequestBody.create(mediaType, "")
         val request = Request.Builder()
             .url(url)
@@ -59,6 +48,6 @@ class HttpClientWeb{
             .addHeader("Cookie", cookie)
             .build()
         val response = client.newCall(request).execute()
-        return response.body()!!.string()
+        return response.body!!.string()
     }
 }

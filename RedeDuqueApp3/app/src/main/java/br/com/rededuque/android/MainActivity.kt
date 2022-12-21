@@ -13,7 +13,8 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import br.com.marka.android.riobel.services.HttpClientWeb
+import br.com.rededuque.android.extensions.toBase64
+import br.com.rededuque.android.services.HttpClientWeb
 import br.com.rededuque.android.model.UrlServer
 import br.com.rededuque.android.model.User
 import br.com.rededuque.android.parse.Json
@@ -28,6 +29,12 @@ import java.net.URLDecoder
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.toolbox.JsonObjectRequest
 import br.com.rededuque.android.extensions.toast
+import br.com.rededuque.android.services.HttpClient
+import com.android.volley.Request
+import com.android.volley.Response
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import java.net.URL
+import javax.security.auth.callback.Callback
 
 class MainActivity : AppCompatActivity() {
 
@@ -78,10 +85,11 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
     override fun onResume() {
         super.onResume()
-        //Get OneSignal Device Data Push Notifications
-        deviceState = OneSignal.getDeviceState()
+//        //Get OneSignal Device Data Push Notifications
+//        deviceState = OneSignal.getDeviceState()
 
         Log.d("Create...", "info push colected...")
     }
@@ -367,24 +375,25 @@ class MainActivity : AppCompatActivity() {
 
         private var cookies: String? = null
         private var user: User? = null
+        //Get OneSignal Device Data Push Notifications
 
-//        @Throws(UnsupportedEncodingException::class)
-//        fun splitQuery(url: URL): Map<String, String>? {
-//            val query_pairs: MutableMap<String, String> = LinkedHashMap()
-//            val query: String = url.getQuery()
-//            val pairs = query.split("&").toTypedArray()
-//            for (pair in pairs) {
-//                val idx = pair.indexOf("=")
-//                query_pairs[URLDecoder.decode(pair.substring(0, idx), "UTF-8")] =
-//                    URLDecoder.decode(pair.substring(idx + 1), "UTF-8")
-//            }
-//            return query_pairs
-//        }
+        @Throws(UnsupportedEncodingException::class)
+        fun splitQuery(url: URL): Map<String, String>? {
+            val query_pairs: MutableMap<String, String> = LinkedHashMap()
+            val query: String = url.getQuery()
+            val pairs = query.split("&").toTypedArray()
+            for (pair in pairs) {
+                val idx = pair.indexOf("=")
+                query_pairs[URLDecoder.decode(pair.substring(0, idx), "UTF-8")] =
+                    URLDecoder.decode(pair.substring(idx + 1), "UTF-8")
+            }
+            return query_pairs
+        }
 
         private fun splitQueryUrl(url : String): String? {
-             var url = HttpUrl.parse(url);
+             var url = url.toHttpUrlOrNull()
              if (url != null) {
-                 return url.queryParameter("idC")
+                 return url.queryParameter("idU")
              } else return null
         }
 
@@ -415,7 +424,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         private fun setAuthCookies(url: String) {
-
             val cookieManager = CookieManager.getInstance()
             cookieManager.setAcceptCookie(true)
 
@@ -430,70 +438,6 @@ class MainActivity : AppCompatActivity() {
             val cookiePasswd = "senha=" + passwdValue!!
             cookieManager.setCookie(url, cookieLogin)
             cookieManager.setCookie(url, cookiePasswd)
-        }
-
-        private fun processRedeDuqueUrlKey2(keyValue : String, companyId: Int = 19, completion: (success: Boolean) -> Unit) {
-            val postparams = JSONObject()
-            postparams.put("RD_userId", keyValue)
-            postparams.put("RD_userCompany", companyId)
-
-//            val request = JsonObjectRequest(Request.Method.POST, mUrlUserSearchKeyData, postparams, Response.Listener { response ->
-//                if (response == null) {
-//                    toast("Houve algum problema na conexão. Tente novamente!")
-//                    completion(false)
-//                    return@Listener
-//                }
-//
-//                val results = response.getJSONArray("results")
-//                val items =
-//                    Gson().fromJson<List<Product>>(
-//                        results.toString(),
-//                        object : TypeToken<List<Product>>() {}.type
-//                    )
-//
-//                for (item in items) {
-//                    if (item.title.isNotEmpty()) {
-//                        item.titleNormalizer = SettingsUtil.removeAccents(item.title)
-//                    }
-//                    item.authorNameNormalizer = SettingsUtil.removeAccents(item.author_name)
-//                    Repository.setProductSeachedSelected(item)
-//                }
-//
-//                mList = items as ArrayList<Product>?
-//
-//                completion(true)
-//            },
-//                Response.ErrorListener { error ->
-//                    // TODO: Handle error
-//                    toast("Error: " + error.message)
-//                    completion(false)
-//                }
-//            )
-//
-//            requestAllProdutos.retryPolicy = DefaultRetryPolicy(
-//                0,
-//                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-//                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
-//            )
-//
-//            requestAllProdutos.tag = Constants.SEARCH_ALL_PRODUTOS_TAG
-//            MainApp.getInstance()!!.addToRequestQueue(requestAllProdutos)
-      }
-
-        private fun processRedeDuqueUrlKey(keyValue : String): User? {
-            var mUser: User? = null
-            var response: String? = null
-
-                response = okHttpCustonClient.post(mUrlUserSearchData, Json.getLoggedUser(keyValue))
-
-            try {
-                if (response != null) {
-                    mUser = Json.toUser(response!!)
-                }
-            } catch (e: UnsupportedEncodingException) {
-                e.printStackTrace()
-            }
-            return mUser
         }
 
         // Manipulate Custom REDEDUQUE Cookie
@@ -530,39 +474,70 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        private fun processRedeDuqueUrlKey(keyValue : String, companyId: Int = PROJECT_ID, completion: (success: Boolean, user: User) -> Unit) {
+            val postparams = Json.getLoggedUser(keyValue.toBase64(), companyId)
+
+            HttpClient.getInstance.postAsync(Request.Method.POST, mUrlUserSearchKeyData, postparams, object : Callback, okhttp3.Callback {
+
+                override fun onFailure(call: Call, e: IOException) {
+                    Log.d(this::class.simpleName, "Error Comunication")
+                }
+
+                override fun onResponse(call: Call, response: okhttp3.Response) {
+                    if (response.isSuccessful && response.code == 200) {
+                        //get data user from idU Key
+                        var userResult = response.peekBody(2048).string()
+                        var userLogged = Json.toUser(userResult)
+                        completion(true, userLogged)
+
+                    } else {
+                        completion(false, null!!)
+                        Log.d(getString(R.string.Error_With_RedeDuque),"Aconteceu algum problema na conexão...")
+                    }
+                }
+            })
+        }
+
         override fun onPageFinished(view: WebView?, url: String?) {
             progressBar!!.setVisibility(View.GONE)
             this@MainActivity.progressBar!!.setProgress(100)
             var response : String? = null
 
+
             // Status Logged
             if (url!!.contains("novoMenu.do")) {
-                //Manipulate Cookie REDE_DUQUE for send data to Rede Duque Servers
-                //cookies = getCookie(url, "REDE_DUQUE")
-                //cookies = getCookie(url, "login")
-                //cookies1 = getCookie(url, "senha")
-                var keyUserID = splitQueryUrl(url)
-                var userLogged = processRedeDuqueUrlKey(keyUserID!!)
-
-                //Verify If First Time Loggon
+                var userLogged: User? = null
+                var deviceState = OneSignal.getDeviceState()
                 var userFirstLogged = Utils.readFromPreferences(applicationContext, FIRST_LOGIN_DONE, false)
-                if (userFirstLogged!!) {
-                    userOneSignalID = deviceState!!.userId
-                    pushDeviceToken = deviceState!!.pushToken
-
-                    userLogged!!.pushToken = pushDeviceToken
-                    runOnUiThread {
-                        response = okHttpCustonClient.post(mUrlUserPushDataInformation, userLogged!!.jsonObject.toString())
-                    }
-                    Log.d("response user push", response!!)
+                pushDeviceToken = deviceState!!.pushToken
+                userOneSignalID = deviceState!!.userId
+                if (!userFirstLogged!!) {
+                    var keyUserID = splitQueryUrl(url)
+                    processRedeDuqueUrlKey(keyUserID!!, completion = { success: Boolean, user: User ->
+                            if (success){
+                                userLogged = user
+                            }
+                    })
                 }
 
+                //Verify If First Time Loggon
+//                if (!userFirstLogged!!) {
+//                    pushDeviceToken = deviceState!!.pushToken
+//                    userOneSignalID = deviceState!!.userId
+//
+//                    userLogged!!.pushToken = pushDeviceToken
+//                    runOnUiThread {
+//                        response = okHttpCustonClient.post(mUrlUserPushDataInformation, userLogged!!.jsonObject.toString())
+//                    }
+//                    Log.d("response user push", response!!)
+//                }
+
                 //Get Authentication Cookies Data
-                val loginCookie = getCookie(url, "login")
-                val passwdCookie = getCookie(url, "senha")
+//                val loginCookie = getCookie(url, "login")
+//                val passwdCookie = getCookie(url, "senha")
 
                 //Save Auth Cookies
-                saveAuthCookies(loginCookie, passwdCookie)
+//                saveAuthCookies(loginCookie, passwdCookie)
             }
 
             // Logon View - Before Logon
@@ -579,7 +554,6 @@ class MainActivity : AppCompatActivity() {
 
 
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-
             view.loadUrl(url)
             // Intecept Data Valiables objects
             if (url.contains("waze://")) {
@@ -615,6 +589,44 @@ class MainActivity : AppCompatActivity() {
             super.onPageStarted(view, url, favicon)
         }
     }
+
+    private fun processRedeDuqueUrlKey2(keyValue : String, companyId: Int = 19, completion: (success: Boolean, user: User) -> Unit) {
+        val postparams = JSONObject()
+        postparams.put("RD_userId", keyValue)
+        postparams.put("RD_userCompany", companyId)
+
+        val requestKeyidC = JsonObjectRequest(Request.Method.POST, mUrlUserSearchKeyData, postparams, com.android.volley.Response.Listener { response ->
+            if (response == null) {
+                toast("Houve algum problema na conexão. Tente novamente!")
+                completion(false, null!!)
+                return@Listener
+            }
+
+            val user = Json.toLoggedUser(response.toString())
+
+            completion(true, user)
+        },
+            Response.ErrorListener { error ->
+                toast("Error: " + error.message)
+                completion(false, null!!)
+            }
+        )
+
+//        requestKeyidC.retryPolicy = DefaultRetryPolicy(
+//            0,
+//            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+//            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+//        )
+
+        requestKeyidC.tag = VERIFY_KEY_CUSTOMER
+        InitApplication.getInstance()!!.addToRequestQueue(requestKeyidC)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        InitApplication.getInstance()!!.cancelPendingRequests(VERIFY_KEY_CUSTOMER)
+    }
+
 
     override fun onBackPressed() {
         if (mWebView!!.canGoBack()) {

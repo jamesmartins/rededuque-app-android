@@ -8,7 +8,9 @@ class User(
     var RD_userMail: String? = null,
     var RD_userName: String? = null,
     var RD_userType: String? = null,
-    var pushToken: String? = null,
+    var RD_TokenCelular: String? = null,
+    var RD_User_Player_Id: String? = null,
+    var RD_Versao: String? = null,
 
     var jsonObject: JSONObject? = null) {
 }
