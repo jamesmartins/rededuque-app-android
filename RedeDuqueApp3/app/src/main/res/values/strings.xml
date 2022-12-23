@@ -9,5 +9,7 @@
     <string name="msg_location_service_not_started">Location Tracking Not Started</string>
     <string name="msg_location_service_started">Location Tracking Started</string>
     <string name="Error_With_RedeDuque">Error Rede Duque..:</string>
+    <string name="Success_To_RedeDuque">Envio_Data_Com_Sucesso</string>
+    <string name="Data_Sent_to_RedeDuque">Dados_OneSignal_Enviados</string>
 
 </resources>

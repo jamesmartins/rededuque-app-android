@@ -42,6 +42,26 @@ object Json {
         }
     }
 
+    fun getUserOneSignalData(user : User ): String{
+        try {
+            var json = JSONStringer()
+                .`object`()
+                    .key("RD_userId").value(user.RD_userId)
+                    .key("RD_userCompany").value(PROJECT_ID)
+                    .key("RD_userMail").value(user.RD_userMail)
+                    .key("RD_userName").value(user.RD_userName)
+                    .key("RD_userType").value(user.RD_userType)
+                    .key("RD_TokenCelular").value(user.RD_TokenCelular)
+                    .key("RD_User_Player_Id").value(user.RD_User_Player_Id)
+                    .key("RD_Versao").value("Android")
+                .endObject()
+                .toString()
+            return json
+        } catch (e: JSONException) {
+            throw RuntimeException(e)
+        }
+    }
+
     fun toLoggedUser(json: String): User {
         try {
             val obj = JSONObject(json)

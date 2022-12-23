@@ -138,7 +138,7 @@ class MainActivity : AppCompatActivity() {
 //        val url = "http://adm.bunker.mk/wsjson/url_dinamico.do"
 //        val isConnected = Utils.isNetworkConnected(applicationContext)
 //        if (!isConnected) {
-//            Toast.makeText(this, "Falta de Conexão!", Toast.LENGTH_SHORT).show()
+//             Toast.makeText(this, "Falta de Conexão!", Toast.LENGTH_SHORT).show()
 //            return
 //        }
 //
@@ -480,6 +480,7 @@ class MainActivity : AppCompatActivity() {
             HttpClient.getInstance.postAsync(Request.Method.POST, mUrlUserSearchKeyData, postparams, object : Callback, okhttp3.Callback {
 
                 override fun onFailure(call: Call, e: IOException) {
+                    completion(false, null!!)
                     Log.d(this::class.simpleName, "Error Comunication")
                 }
 
@@ -487,11 +488,37 @@ class MainActivity : AppCompatActivity() {
                     if (response.isSuccessful && response.code == 200) {
                         //get data user from idU Key
                         var userResult = response.peekBody(2048).string()
-                        var userLogged = Json.toUser(userResult)
-                        completion(true, userLogged)
-
+                        val obj = JSONObject(userResult)
+                        if (obj.has("RD_userId")) {
+                            var userLogged = Json.toUser(userResult)
+                            completion(true, userLogged)
+                        }
                     } else {
                         completion(false, null!!)
+                        Log.d(getString(R.string.Error_With_RedeDuque),"Aconteceu algum problema na conexão...")
+                    }
+                }
+            })
+        }
+
+        private fun sendOneSignalDataToRedeDuque(userLogged : User, completion: (success: Boolean) -> Unit) {
+            val postparams = Json.getUserOneSignalData(userLogged)
+
+            HttpClient.getInstance.postAsync(Request.Method.POST, mUrlUserPushDataInformation, postparams, object : Callback, okhttp3.Callback {
+
+                override fun onFailure(call: Call, e: IOException) {
+                    completion(false)
+                    Log.d(this::class.simpleName, "Error Comunication")
+                }
+
+                override fun onResponse(call: Call, response: okhttp3.Response) {
+                    if (response.isSuccessful && response.code == 200) {
+                        //get data user from idU Key
+                        Log.d(getString(R.string.Success_To_RedeDuque),"Envio de dados OneSignal com sucesso...")
+                        completion(true)
+
+                    } else {
+                        completion(false)
                         Log.d(getString(R.string.Error_With_RedeDuque),"Aconteceu algum problema na conexão...")
                     }
                 }
@@ -502,42 +529,39 @@ class MainActivity : AppCompatActivity() {
             progressBar!!.setVisibility(View.GONE)
             this@MainActivity.progressBar!!.setProgress(100)
             var response : String? = null
+            var userLogged: User? = null
 
-
-            // Status Logged
+            // Status User Logged
             if (url!!.contains("novoMenu.do")) {
-                var userLogged: User? = null
+
+                // Get OneSignal data
                 var deviceState = OneSignal.getDeviceState()
-                var userFirstLogged = Utils.readFromPreferences(applicationContext, FIRST_LOGIN_DONE, false)
-                pushDeviceToken = deviceState!!.pushToken
-                userOneSignalID = deviceState!!.userId
-                if (!userFirstLogged!!) {
-                    var keyUserID = splitQueryUrl(url)
-                    processRedeDuqueUrlKey(keyUserID!!, completion = { success: Boolean, user: User ->
-                            if (success){
-                                userLogged = user
-                            }
-                    })
+                deviceState.let {
+                    pushDeviceToken = deviceState?.pushToken
+                    userOneSignalID = deviceState?.userId
                 }
 
-                //Verify If First Time Loggon
-//                if (!userFirstLogged!!) {
-//                    pushDeviceToken = deviceState!!.pushToken
-//                    userOneSignalID = deviceState!!.userId
-//
-//                    userLogged!!.pushToken = pushDeviceToken
-//                    runOnUiThread {
-//                        response = okHttpCustonClient.post(mUrlUserPushDataInformation, userLogged!!.jsonObject.toString())
-//                    }
-//                    Log.d("response user push", response!!)
-//                }
+                // Get RedeDuque User Logged data
+                var keyUserID = splitQueryUrl(url)
+                processRedeDuqueUrlKey(keyUserID!!, completion = { success: Boolean, user: User ->
+                        if (success){
+                            userLogged = user
+                            userLogged!!.RD_TokenCelular = pushDeviceToken
+                            userLogged!!.RD_userId = userOneSignalID
+
+                            //Send OenSignal Data to RedeDuque
+                            sendOneSignalDataToRedeDuque(userLogged!!, completion = {
+                                if (it) Log.d(getString(R.string.Data_Sent_to_RedeDuque), "Dados OneSigbal Enviados para Rede Duque")
+                            })
+                        }
+                })
 
                 //Get Authentication Cookies Data
-//                val loginCookie = getCookie(url, "login")
-//                val passwdCookie = getCookie(url, "senha")
+                val loginCookie = getCookie(url, "login")
+                val passwdCookie = getCookie(url, "senha")
 
                 //Save Auth Cookies
-//                saveAuthCookies(loginCookie, passwdCookie)
+                saveAuthCookies(loginCookie, passwdCookie)
             }
 
             // Logon View - Before Logon
