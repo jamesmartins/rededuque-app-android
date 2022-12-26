@@ -8,9 +8,6 @@ import org.json.JSONException
 import org.json.JSONObject
 import org.json.JSONStringer
 
-
-
-
 object Json {
     fun toUser(json: String): User {
         try {
@@ -20,7 +17,10 @@ object Json {
             user.RD_userCompany = obj.getString("RD_userCompany")
             user.RD_userMail = obj.getString("RD_userMail")
             user.RD_userName = obj.getString("RD_userName")
-            user.RD_userType = obj.getString("RD_userType")
+            user.RD_userpass = obj.getString("RD_userpass")
+            user.RD_userType = (obj.getString("RD_userType").isNullOrBlank() ?: "").toString()
+            user.RD_TokenCelular = (obj.getString("RD_TokenCelular").isNullOrBlank() ?: "").toString()
+            user.RD_Versao = (obj.getString("RD_Versao").isNullOrBlank() ?: "").toString()
             user.jsonObject = obj
             return user
         } catch (e: JSONException) {

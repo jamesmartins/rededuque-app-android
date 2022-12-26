@@ -66,11 +66,6 @@ class MainActivity : AppCompatActivity() {
      */
     private val REQUEST_PERMISSIONS_REQUEST_CODE = 34
 
-    //Context Push Notifications Variables
-    private var deviceState : OSDeviceState? = null
-    private var userOneSignalID : String? = null
-    private var pushDeviceToken : String? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -82,16 +77,10 @@ class MainActivity : AppCompatActivity() {
 
         // Load Url
         doLoadRequest(ACCESSEDSTATICURL)
-
     }
-
 
     override fun onResume() {
         super.onResume()
-//        //Get OneSignal Device Data Push Notifications
-//        deviceState = OneSignal.getDeviceState()
-
-        Log.d("Create...", "info push colected...")
     }
 
     /**
@@ -134,63 +123,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-//    private fun doRequestFromUrl() {
-//        val url = "http://adm.bunker.mk/wsjson/url_dinamico.do"
-//        val isConnected = Utils.isNetworkConnected(applicationContext)
-//        if (!isConnected) {
-//             Toast.makeText(this, "Falta de Conexão!", Toast.LENGTH_SHORT).show()
-//            return
-//        }
-//
-//        val request = Request.Builder.url(url).build()
-//
-//        okHttpClient.newCall(request)
-//            .enqueue(object : Callback {
-//                override fun onFailure(call: Call, e: IOException) {
-//                    // Error
-//                    runOnUiThread {
-////                        Toast.makeText(this@MainActivity, "Erro de Comunicação!", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//
-//                @Throws(IOException::class)
-//                override fun onResponse(call: Call, response: Response) {
-//                    val result = response.body().string()
-//                    mUrlServer = Json.toUrlServer(result)
-//
-//                    runOnUiThread { mUrlServer!!.urlDefault?.let { loadContent(it) } }
-//                }
-//            })
-//    }
-
-//    fun doSendGetRequest(method: Int, url: String, json: String) {
-//        Log.d(TAG, "Sending Settings to Duque Server...")
-//        val body = RequestBody.create(HttpClientWeb.JSONType, json)
-//        val isConnected = Utils.isNetworkConnected(applicationContext)
-//
-//        if (!isConnected) {
-//            Toast.makeText(this, "Falta de Conexão!", Toast.LENGTH_SHORT).show()
-//            return
-//        }
-//
-//        val request = Request.Builder.url(url).post(body).build()
-//
-//        okHttpClient.newCall(request).enqueue(object : Callback {
-//                override fun onFailure(call: Call, e: IOException) {
-//                    // Error
-//                    runOnUiThread {
-//                        //Toast.makeText(MainActivity.this, "Erro de Comunicação!", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//
-//                @Throws(IOException::class)
-//                override fun onResponse(call: Call, response: Response) {
-//                    //TO DO
-//                }
-//            })
-//    }
-
-
     private fun loadContent(url: String) {
         val isConnected = Utils.isNetworkConnected(applicationContext)
         if (mWebView != null) {
@@ -214,10 +146,8 @@ class MainActivity : AppCompatActivity() {
         mWebView!!.settings.loadWithOverviewMode = true
         mWebView!!.settings.useWideViewPort = true
         mWebView!!.settings.builtInZoomControls = false
-
         mWebView!!.webChromeClient = WebChromeClient()
         mWebView!!.webViewClient = CustomWebViewClientv2()
-
         //WebView.setWebContentsDebuggingEnabled(true);
     }
 
@@ -392,9 +322,9 @@ class MainActivity : AppCompatActivity() {
 
         private fun splitQueryUrl(url : String): String? {
              var url = url.toHttpUrlOrNull()
-             if (url != null) {
-                 return url.queryParameter("idU")
-             } else return null
+            return if (url != null) {
+                url.queryParameter("idU")
+            } else null
         }
 
         private fun getCookie(url: String, cookieName: String): String? {
@@ -514,7 +444,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onResponse(call: Call, response: okhttp3.Response) {
                     if (response.isSuccessful && response.code == 200) {
                         //get data user from idU Key
-                        Log.d(getString(R.string.Success_To_RedeDuque),"Envio de dados OneSignal com sucesso...")
+                        Log.d(getString(R.string.Success_To_RedeDuque),"Enviados dados OneSignal com sucesso...")
                         completion(true)
 
                     } else {
@@ -528,40 +458,37 @@ class MainActivity : AppCompatActivity() {
         override fun onPageFinished(view: WebView?, url: String?) {
             progressBar!!.setVisibility(View.GONE)
             this@MainActivity.progressBar!!.setProgress(100)
-            var response : String? = null
             var userLogged: User? = null
 
             // Status User Logged
-            if (url!!.contains("novoMenu.do")) {
-
-                // Get OneSignal data
-                var deviceState = OneSignal.getDeviceState()
-                deviceState.let {
-                    pushDeviceToken = deviceState?.pushToken
-                    userOneSignalID = deviceState?.userId
-                }
+            if (url!!.contains("novoMenu.do") && url!!.contains("log=1") ) {
 
                 // Get RedeDuque User Logged data
                 var keyUserID = splitQueryUrl(url)
                 processRedeDuqueUrlKey(keyUserID!!, completion = { success: Boolean, user: User ->
                         if (success){
                             userLogged = user
-                            userLogged!!.RD_TokenCelular = pushDeviceToken
-                            userLogged!!.RD_userId = userOneSignalID
+
+                            // Get OneSignal data
+                            var deviceState = OneSignal.getDeviceState()
+                            deviceState.let {
+                                userLogged!!.RD_TokenCelular = deviceState?.pushToken
+                                userLogged!!.RD_User_Player_Id = deviceState?.userId
+                            }
+
+                            //Get Authentication Cookies Data
+                            val loginCookie = userLogged!!.RD_userMail
+                            val passwdCookie = userLogged!!.RD_userpass
+
+                            //Save Auth Cookies
+                            saveAuthCookies(loginCookie, passwdCookie)
 
                             //Send OenSignal Data to RedeDuque
                             sendOneSignalDataToRedeDuque(userLogged!!, completion = {
-                                if (it) Log.d(getString(R.string.Data_Sent_to_RedeDuque), "Dados OneSigbal Enviados para Rede Duque")
+                                if (it) Log.d(getString(R.string.Data_Sent_to_RedeDuque), "Dados OneSignal Enviados para Rede Duque!")
                             })
                         }
                 })
-
-                //Get Authentication Cookies Data
-                val loginCookie = getCookie(url, "login")
-                val passwdCookie = getCookie(url, "senha")
-
-                //Save Auth Cookies
-                saveAuthCookies(loginCookie, passwdCookie)
             }
 
             // Logon View - Before Logon
@@ -603,7 +530,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 view.stopLoading()
             }
-
             return true
         }
 
@@ -614,43 +540,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun processRedeDuqueUrlKey2(keyValue : String, companyId: Int = 19, completion: (success: Boolean, user: User) -> Unit) {
-        val postparams = JSONObject()
-        postparams.put("RD_userId", keyValue)
-        postparams.put("RD_userCompany", companyId)
-
-        val requestKeyidC = JsonObjectRequest(Request.Method.POST, mUrlUserSearchKeyData, postparams, com.android.volley.Response.Listener { response ->
-            if (response == null) {
-                toast("Houve algum problema na conexão. Tente novamente!")
-                completion(false, null!!)
-                return@Listener
-            }
-
-            val user = Json.toLoggedUser(response.toString())
-
-            completion(true, user)
-        },
-            Response.ErrorListener { error ->
-                toast("Error: " + error.message)
-                completion(false, null!!)
-            }
-        )
-
-//        requestKeyidC.retryPolicy = DefaultRetryPolicy(
-//            0,
-//            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-//            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
-//        )
-
-        requestKeyidC.tag = VERIFY_KEY_CUSTOMER
-        InitApplication.getInstance()!!.addToRequestQueue(requestKeyidC)
-    }
-
     override fun onStop() {
         super.onStop()
         InitApplication.getInstance()!!.cancelPendingRequests(VERIFY_KEY_CUSTOMER)
     }
-
 
     override fun onBackPressed() {
         if (mWebView!!.canGoBack()) {
