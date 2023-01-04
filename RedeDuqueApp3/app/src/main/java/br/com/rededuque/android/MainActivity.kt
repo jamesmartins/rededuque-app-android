@@ -404,13 +404,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        private fun processRedeDuqueUrlKey(keyValue : String, companyId: Int = PROJECT_ID, completion: (success: Boolean, user: User) -> Unit) {
+        private fun processRedeDuqueUrlKey(keyValue : String, companyId: Int = PROJECT_ID, completion: (success: Boolean, user: User?) -> Unit) {
             val postparams = Json.getLoggedUser(keyValue.toBase64(), companyId)
 
             HttpClient.getInstance.postAsync(Request.Method.POST, mUrlUserSearchKeyData, postparams, object : Callback, okhttp3.Callback {
 
                 override fun onFailure(call: Call, e: IOException) {
-                    completion(false, null!!)
+                    completion(false,  User())
                     Log.d(this::class.simpleName, "Error Comunication")
                 }
 
@@ -424,15 +424,15 @@ class MainActivity : AppCompatActivity() {
                                 var userLogged = Json.toUser(userResult)
                                 completion(true, userLogged)
                             } else {
-                                completion(false, null!!)
+                                completion(false, User())
                                 Log.d("Error_Message","Aconteceu algum problema de dados da RedeDuque...")
                             }
                         } else {
-                            completion(false, null!!)
+                            completion(false, User())
                             Log.d("Error_Message","Aconteceu algum problema de dados da RedeDuque...")
                         }
                     } else {
-                        completion(false, null!!)
+                        completion(false, User())
                         Log.d(getString(R.string.Error_With_RedeDuque),"Aconteceu algum problema na conexão...")
                     }
                 }
@@ -474,9 +474,9 @@ class MainActivity : AppCompatActivity() {
                 // Get RedeDuque User Logged data
                 var keyUserID = splitQueryUrl(url, "idU")
                 if (!keyUserID.isNullOrBlank()){
-                    processRedeDuqueUrlKey(keyUserID!!, completion = { success: Boolean, user: User ->
+                    processRedeDuqueUrlKey(keyUserID!!, completion = { success: Boolean, user: User? ->
                         if (success){
-                            userLogged = user
+                            userLogged = user!!
 
                             // Get OneSignal data
                             var deviceState = OneSignal.getDeviceState()
