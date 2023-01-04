@@ -12,6 +12,5 @@ class User(
     var RD_TokenCelular: String? = null,
     var RD_User_Player_Id: String? = null,
     var RD_Versao: String? = null,
-
     var jsonObject: JSONObject? = null) {
 }

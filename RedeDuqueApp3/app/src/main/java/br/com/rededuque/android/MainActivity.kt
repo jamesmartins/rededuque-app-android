@@ -320,10 +320,10 @@ class MainActivity : AppCompatActivity() {
             return query_pairs
         }
 
-        private fun splitQueryUrl(url : String): String? {
+        private fun splitQueryUrl(url : String, key: String): String? {
              var url = url.toHttpUrlOrNull()
             return if (url != null) {
-                url.queryParameter("idU")
+                url.queryParameter(key)
             } else null
         }
 
@@ -418,10 +418,18 @@ class MainActivity : AppCompatActivity() {
                     if (response.isSuccessful && response.code == 200) {
                         //get data user from idU Key
                         var userResult = response.peekBody(2048).string()
-                        val obj = JSONObject(userResult)
-                        if (obj.has("RD_userId")) {
-                            var userLogged = Json.toUser(userResult)
-                            completion(true, userLogged)
+                        if (userResult.isNotEmpty() && userResult.isNotBlank()){
+                            val obj = JSONObject(userResult)
+                            if (obj.has("RD_userId")) {
+                                var userLogged = Json.toUser(userResult)
+                                completion(true, userLogged)
+                            } else {
+                                completion(false, null!!)
+                                Log.d("Error_Message","Aconteceu algum problema de dados da RedeDuque...")
+                            }
+                        } else {
+                            completion(false, null!!)
+                            Log.d("Error_Message","Aconteceu algum problema de dados da RedeDuque...")
                         }
                     } else {
                         completion(false, null!!)
@@ -464,8 +472,9 @@ class MainActivity : AppCompatActivity() {
             if (url!!.contains("novoMenu.do") && url!!.contains("log=1") ) {
 
                 // Get RedeDuque User Logged data
-                var keyUserID = splitQueryUrl(url)
-                processRedeDuqueUrlKey(keyUserID!!, completion = { success: Boolean, user: User ->
+                var keyUserID = splitQueryUrl(url, "idU")
+                if (!keyUserID.isNullOrBlank()){
+                    processRedeDuqueUrlKey(keyUserID!!, completion = { success: Boolean, user: User ->
                         if (success){
                             userLogged = user
 
@@ -488,7 +497,8 @@ class MainActivity : AppCompatActivity() {
                                 if (it) Log.d(getString(R.string.Data_Sent_to_RedeDuque), "Dados OneSignal Enviados para Rede Duque!")
                             })
                         }
-                })
+                    })
+                }
             }
 
             // Logon View - Before Logon
