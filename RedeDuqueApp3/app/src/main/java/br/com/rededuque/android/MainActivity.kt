@@ -349,22 +349,23 @@ class MainActivity : AppCompatActivity() {
             return CookieValue
         }
 
-        private fun setAuthCookies(url: String) {
-            val cookieManager = CookieManager.getInstance()
-            cookieManager.setAcceptCookie(true)
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                cookieManager.setAcceptThirdPartyCookies(mWebView, true)
-            }
-
-            val loginValue = Utils.readFromPreferences(applicationContext, "LoginSAVED", "")
-            val passwdValue = Utils.readFromPreferences(applicationContext, "passwdSAVED", "")
-
-            val cookieLogin = "login=" + loginValue!!
-            val cookiePasswd = "senha=" + passwdValue!!
-            cookieManager.setCookie(url, cookieLogin)
-            cookieManager.setCookie(url, cookiePasswd)
-        }
+        //disable cookies treatment
+//        private fun setAuthCookies(url: String) {
+//            val cookieManager = CookieManager.getInstance()
+//            cookieManager.setAcceptCookie(true)
+//
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                cookieManager.setAcceptThirdPartyCookies(mWebView, true)
+//            }
+//
+//            val loginValue = Utils.readFromPreferences(applicationContext, "LoginSAVED", "")
+//            val passwdValue = Utils.readFromPreferences(applicationContext, "passwdSAVED", "")
+//
+//            val cookieLogin = "login=" + loginValue!!
+//            val cookiePasswd = "senha=" + passwdValue!!
+//            cookieManager.setCookie(url, cookieLogin)
+//            cookieManager.setCookie(url, cookiePasswd)
+//        }
 
         // Manipulate Custom REDEDUQUE Cookie
         private fun processRedeDuqueCookie(cookies: String?) : User? {
