@@ -26,12 +26,8 @@ import org.json.JSONObject
 import java.io.IOException
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
-import com.android.volley.DefaultRetryPolicy
-import com.android.volley.toolbox.JsonObjectRequest
-import br.com.rededuque.android.extensions.toast
 import br.com.rededuque.android.services.HttpClient
 import com.android.volley.Request
-import com.android.volley.Response
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.net.URL
 import javax.security.auth.callback.Callback
@@ -501,6 +497,38 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
+            if (url!!.contains("cadastro_V2.do") ) {
+
+                // Get RedeDuque User Logged data
+                var keyUserID = splitQueryUrl(url, "idU")
+                if (!keyUserID.isNullOrBlank()){
+                    processRedeDuqueUrlKey(keyUserID!!, completion = { success: Boolean, user: User? ->
+                        if (success){
+                            userLogged = user!!
+
+                            // Get OneSignal data
+                            var deviceState = OneSignal.getDeviceState()
+                            deviceState.let {
+                                userLogged!!.RD_TokenCelular = deviceState?.pushToken
+                                userLogged!!.RD_User_Player_Id = deviceState?.userId
+                            }
+
+                            //Get Authentication Cookies Data
+                            val loginCookie = userLogged!!.RD_userMail
+                            val passwdCookie = userLogged!!.RD_userpass
+
+                            //Save Auth Cookies
+                            saveAuthCookies(loginCookie, passwdCookie)
+
+                            //Send OenSignal Data to RedeDuque
+                            sendOneSignalDataToRedeDuque(userLogged!!, completion = {
+                                if (it) Log.d(getString(R.string.Data_Sent_to_RedeDuque), "Dados OneSignal Enviados para Rede Duque!")
+                            })
+                        }
+                    })
+                }
+            }
+
             // Logon View - Before Logon
             if (url.contains("app.do")) {
                 // Restore Authentication Cookies
@@ -552,7 +580,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        InitApplication.getInstance()!!.cancelPendingRequests(VERIFY_KEY_CUSTOMER)
     }
 
     override fun onBackPressed() {
