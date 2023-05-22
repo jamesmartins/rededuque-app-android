@@ -4,7 +4,6 @@ import android.app.PendingIntent
 import android.content.*
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -149,154 +148,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPointerCaptureChanged(hasCapture: Boolean) {}
 
-    inner class CustomWebViewClient : WebViewClient() {
-
-        private var cookies: String? = null
-        private var user: User? = null
-        private val userObj: JSONObject? = null
-
-        private fun getCookie(url: String, cookieName: String): String? {
-            var CookieValue: String? = null
-
-            val cookieManager = CookieManager.getInstance()
-            cookieManager.setAcceptCookie(true)
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                cookieManager.setAcceptThirdPartyCookies(mWebView, true)
-            }
-
-            val cookies = cookieManager.getCookie(url)
-            val temp = cookies.split(";".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            for (ar1 in temp) {
-                if (ar1.trim { it <= ' ' }.indexOf(cookieName) == 0) {
-                    val temp1 = ar1.split("=".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                    CookieValue = temp1[1]
-                    break
-                }
-            }
-            return CookieValue
-        }
-
-        private fun setAuthCookies(url: String) {
-
-            val cookieManager = CookieManager.getInstance()
-            cookieManager.setAcceptCookie(true)
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                cookieManager.setAcceptThirdPartyCookies(mWebView, true)
-            }
-
-            val loginValue = Utils.readFromPreferences(applicationContext, "LoginSAVED", "")
-            val passwdValue = Utils.readFromPreferences(applicationContext, "passwdSAVED", "")
-
-            val cookieLogin = "login=" + loginValue!!
-            val cookiePasswd = "senha=" + passwdValue!!
-            cookieManager.setCookie(url, cookieLogin)
-            cookieManager.setCookie(url, cookiePasswd)
-        }
-
-        // Manipulate Custom REDEDUQUE Cookie
-        private fun handleRedeDuqueCookie(cookies: String?) {
-            var cookies = cookies
-            var mUser : User? = null
-            try {
-                if (cookies != null) {
-                    cookies = URLDecoder.decode(cookies, "UTF-8")
-                    mUser = Json.toUser(cookies!!)
-                }
-            } catch (e: UnsupportedEncodingException) {
-                e.printStackTrace()
-            }
-
-            if (mUser != null) {
-                OneSignal.sendTags(mUser!!.jsonObject)
-                if (!mUser!!.RD_userMail!!.isEmpty() && mUser!!.RD_userMail!!.length > 0)
-                    OneSignal.setEmail(user!!.RD_userMail!!)
-
-                Utils.saveToPreference(applicationContext, "UserSAVED", mUser!!.RD_userId!!)
-                Log.i("OneSignal", "Tags Sent.......")
-            } else {
-                Log.i("OneSignal", "Fail Tags Sent......: User NULL")
-            }
-            user = mUser
-
-        }
-
-        private fun saveAuthCookies(login: String?, passwd: String?) {
-            if (login != null && passwd != null) {
-                Utils.saveToPreference(applicationContext, "LoginSAVED", login.trim { it <= ' ' })
-                Utils.saveToPreference(applicationContext, "passwdSAVED", passwd.trim { it <= ' ' })
-            }
-        }
-
-        override fun onPageFinished(view: WebView?, url: String?) {
-            progressBar!!.setVisibility(View.GONE)
-            this@MainActivity.progressBar!!.setProgress(100)
-
-            // Status Logged
-            if (url!!.contains("log=1")) {
-
-                //Manipulate Cookie REDE_DUQUE for send data to Rede Duque Servers
-                cookies = getCookie(url, "REDE_DUQUE")
-                handleRedeDuqueCookie(cookies)
-
-                //Get Authentication Cookies Data
-                val loginCookie = getCookie(url, "login")
-                val passwdCookie = getCookie(url, "senha")
-
-                //Save Auth Cookies
-                saveAuthCookies(loginCookie, passwdCookie)
-            }
-
-            // Logon View - Before Logon
-            if (url.contains(mUrlStatic + "novoLogin.do")) {
-                // Restore Authentication Cookies
-                setAuthCookies(url)
-            }
-
-            super.onPageFinished(view, url)
-        }
-
-
-        override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-
-            view.loadUrl(url)
-
-            // Intecept Data Valiables objects
-            if (url.contains("waze://")) {
-                var intent = Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url))
-                if (intent.resolveActivity(packageManager) != null) {
-                    startActivity(Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url)))
-                } else {
-                    intent =
-                        Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.waze"))
-                    startActivity(intent)
-                }
-                view.stopLoading()
-            }
-            //  https://maps.google.com/
-            if (url.contains("maps.google.com")) {
-                var intent = Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url))
-                if (intent.resolveActivity(packageManager) != null) {
-                    startActivity(Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url)))
-                } else {
-                    intent =
-                        Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.waze"))
-                    startActivity(intent)
-                }
-                view.stopLoading()
-            }
-
-            return true
-        }
-
-        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-            progressBar!!.setVisibility(View.VISIBLE)
-            this@MainActivity.progressBar!!.progress = 0
-            super.onPageStarted(view, url, favicon)
-        }
-    }
-
     inner class CustomWebViewClientv2 : WebViewClient() {
 
         private var cookies: String? = null
@@ -323,81 +174,16 @@ class MainActivity : AppCompatActivity() {
             } else null
         }
 
-        private fun getCookie(url: String, cookieName: String): String? {
-            var CookieValue: String? = null
-
-            val cookieManager = CookieManager.getInstance()
-            cookieManager.setAcceptCookie(true)
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                cookieManager.setAcceptThirdPartyCookies(mWebView, true)
-            }
-
-            val cookies = cookieManager.getCookie(url)
-
-            val temp = cookies.split(";".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            while (temp[1] == cookieName) {
-                for (ar1 in temp) {
-                    if (ar1.trim { it <= ' ' }.indexOf(cookieName) == 0) {
-                        val temp1 =
-                            ar1.split("=".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                        CookieValue = temp1[1]
-                        break
-                    }
-                }
-            }
-            return CookieValue
-        }
-
-        //disable cookies treatment
-//        private fun setAuthCookies(url: String) {
-//            val cookieManager = CookieManager.getInstance()
-//            cookieManager.setAcceptCookie(true)
-//
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                cookieManager.setAcceptThirdPartyCookies(mWebView, true)
-//            }
-//
-//            val loginValue = Utils.readFromPreferences(applicationContext, "LoginSAVED", "")
-//            val passwdValue = Utils.readFromPreferences(applicationContext, "passwdSAVED", "")
-//
-//            val cookieLogin = "login=" + loginValue!!
-//            val cookiePasswd = "senha=" + passwdValue!!
-//            cookieManager.setCookie(url, cookieLogin)
-//            cookieManager.setCookie(url, cookiePasswd)
-//        }
-
-        // Manipulate Custom REDEDUQUE Cookie
-        private fun processRedeDuqueCookie(cookies: String?) : User? {
-            var cookies = cookies
-            var mUser: User? = null
-            try {
-                if (cookies != null) {
-                    cookies = URLDecoder.decode(cookies, "UTF-8")
-                    mUser = Json.toUser(cookies!!)
-                }
-            } catch (e: UnsupportedEncodingException) {
-                e.printStackTrace()
-            }
-
-            if (mUser != null) {
-                OneSignal.sendTags(mUser!!.jsonObject)
-                if (!mUser!!.RD_userMail!!.isEmpty() && mUser!!.RD_userMail!!.length > 0)
-                    OneSignal.setEmail(mUser!!.RD_userMail!!)
-
-                Utils.saveToPreference(applicationContext, "UserSAVED", mUser!!.RD_userId!!)
-                Log.i("OneSignal", "Tags Sent.......")
-            } else {
-                Log.i("OneSignal", "Fail Tags Sent......: User NULL")
-            }
-            user = mUser
-            return mUser
-        }
-
         private fun saveAuthCookies(login: String?, passwd: String?) {
             if (login != null && passwd != null) {
-                Utils.saveToPreference(applicationContext, "LoginSAVED", login.trim { it <= ' ' })
+                Utils.saveToPreference(applicationContext, "emailSAVED", login.trim { it <= ' ' })
                 Utils.saveToPreference(applicationContext, "passwdSAVED", passwd.trim { it <= ' ' })
+            }
+        }
+
+        private fun saveAuthIDLToken(idlToken: String?) {
+            if (idlToken != null) {
+                Utils.saveToPreference(applicationContext, "tokenSAVED", idlToken.trim { it <= ' ' })
             }
         }
 
@@ -466,8 +252,7 @@ class MainActivity : AppCompatActivity() {
             var userLogged: User? = null
 
             // Status User Logged
-            if (url!!.contains("novoMenu.do") && url!!.contains("log=1") ) {
-
+            if (url!!.contains("novoMenu.do") and url!!.contains("cadastro_V2.do")) {
                 // Get RedeDuque User Logged data
                 var keyUserID = splitQueryUrl(url, "idU")
                 if (!keyUserID.isNullOrBlank()){
@@ -483,43 +268,11 @@ class MainActivity : AppCompatActivity() {
                             }
 
                             //Get Authentication Cookies Data
-                            val loginCookie = userLogged!!.RD_userMail
+                            val emailCookie = userLogged!!.RD_userMail
                             val passwdCookie = userLogged!!.RD_userpass
 
                             //Save Auth Cookies
-                            saveAuthCookies(loginCookie, passwdCookie)
-
-                            //Send OenSignal Data to RedeDuque
-                            sendOneSignalDataToRedeDuque(userLogged!!, completion = {
-                                if (it) Log.d(getString(R.string.Data_Sent_to_RedeDuque), "Dados OneSignal Enviados para Rede Duque!")
-                            })
-                        }
-                    })
-                }
-            }
-
-            if (url!!.contains("cadastro_V2.do") ) {
-
-                // Get RedeDuque User Logged data
-                var keyUserID = splitQueryUrl(url, "idU")
-                if (!keyUserID.isNullOrBlank()){
-                    processRedeDuqueUrlKey(keyUserID!!, completion = { success: Boolean, user: User? ->
-                        if (success){
-                            userLogged = user!!
-
-                            // Get OneSignal data
-                            var deviceState = OneSignal.getDeviceState()
-                            deviceState.let {
-                                userLogged!!.RD_TokenCelular = deviceState?.pushToken
-                                userLogged!!.RD_User_Player_Id = deviceState?.userId
-                            }
-
-                            //Get Authentication Cookies Data
-                            val loginCookie = userLogged!!.RD_userMail
-                            val passwdCookie = userLogged!!.RD_userpass
-
-                            //Save Auth Cookies
-                            saveAuthCookies(loginCookie, passwdCookie)
+                            saveAuthCookies(emailCookie, passwdCookie)
 
                             //Send OenSignal Data to RedeDuque
                             sendOneSignalDataToRedeDuque(userLogged!!, completion = {
@@ -533,11 +286,8 @@ class MainActivity : AppCompatActivity() {
             // Logon View - Before Logon
             if (url.contains("app.do")) {
                 // Restore Authentication Cookies
-                setAuthCookies(url)
+//                setAuthCookies(url)
             }
-
-            // Detecting address page to active location sends
-            // TO DO
 
             super.onPageFinished(view, url)
         }
