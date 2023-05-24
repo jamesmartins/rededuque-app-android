@@ -11,8 +11,8 @@ android {
         applicationId "br.com.rededuque.android"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 30
-        versionName "1.0.30"  //last version without locatoin services
+        versionCode 32
+        versionName "1.4.31"  //1.0.30 was the last version without locatoin services
 //        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

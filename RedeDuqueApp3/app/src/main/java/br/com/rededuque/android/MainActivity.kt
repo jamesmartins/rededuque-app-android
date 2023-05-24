@@ -167,7 +167,7 @@ class MainActivity : AppCompatActivity() {
             return query_pairs
         }
 
-        private fun splitQueryUrl(url : String, key: String): String? {
+        private fun splitSearchStrFromQueryUrl(url : String, key: String): String? {
              var url = url.toHttpUrlOrNull()
             return if (url != null) {
                 url.queryParameter(key)
@@ -246,17 +246,17 @@ class MainActivity : AppCompatActivity() {
             })
         }
 
-        override fun onPageFinished(view: WebView?, url: String?) {
+        override fun onPageFinished(webview: WebView?, url: String?) {
             progressBar!!.setVisibility(View.GONE)
             this@MainActivity.progressBar!!.setProgress(100)
             var userLogged: User? = null
 
             // Status User Logged
-            if (url!!.contains("novoMenu.do") and url!!.contains("cadastro_V2.do")) {
-                // Get RedeDuque User Logged data
-                var keyUserID = splitQueryUrl(url, "idU")
-                if (!keyUserID.isNullOrBlank()){
-                    processRedeDuqueUrlKey(keyUserID!!, completion = { success: Boolean, user: User? ->
+            if (url!!.contains("novoMenu.do") or url!!.contains("cadastro_V2.do")) {
+                // Get RedeDuque Personal User Logged data
+                var IDUkey = splitSearchStrFromQueryUrl(url, "idU")
+                if (!IDUkey.isNullOrBlank()){
+                    processRedeDuqueUrlKey(IDUkey!!, completion = { success: Boolean, user: User? ->
                         if (success){
                             userLogged = user!!
 
@@ -281,15 +281,26 @@ class MainActivity : AppCompatActivity() {
                         }
                     })
                 }
+
+                // Get RedeDuque Login User token data
+                var IDLkey = splitSearchStrFromQueryUrl(url, "idL")
+                if (!IDLkey.isNullOrBlank()){
+                    //Save Auth Cookies
+                    saveAuthIDLToken(IDLkey)
+                }
             }
 
             // Logon View - Before Logon
-            if (url.contains("app.do")) {
-                // Restore Authentication Cookies
-//                setAuthCookies(url)
+            if (url.contains("app.do") and !url.contains("idL=")) {
+                // Restore Authentication token data
+                var idlToken = Utils.readFromPreferences(applicationContext, "tokenSAVED","")
+                if (!idlToken.isNullOrBlank()){
+                    webview!!.stopLoading()
+                    var urlString = "$url&idL=$idlToken".toHttpUrlOrNull()
+                    webview.loadUrl(urlString.toString())
+                }
             }
-
-            super.onPageFinished(view, url)
+            super.onPageFinished(webview, url)
         }
 
 
