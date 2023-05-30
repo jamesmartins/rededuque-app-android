@@ -303,7 +303,6 @@ class MainActivity : AppCompatActivity() {
             super.onPageFinished(webview, url)
         }
 
-
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
             view.loadUrl(url)
             // Intecept Data Valiables objects
