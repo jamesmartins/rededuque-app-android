@@ -12,6 +12,9 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
 import br.com.rededuque.android.extensions.toBase64
 import br.com.rededuque.android.services.HttpClientWeb
 import br.com.rededuque.android.model.UrlServer
@@ -29,7 +32,9 @@ import br.com.rededuque.android.services.HttpClient
 import com.android.volley.Request
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.net.URL
+import java.util.concurrent.Executor
 import javax.security.auth.callback.Callback
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -46,6 +51,10 @@ class MainActivity : AppCompatActivity() {
     private val okHttpCustonClient = HttpClientWeb()
     private var latitude : String? = null
     private var longitude : String? = null
+
+    private lateinit var executor: Executor
+    private lateinit var biometricPrompt: BiometricPrompt
+    private lateinit var promptInfo: BiometricPrompt.PromptInfo
 
     /**
      * Control States:
@@ -144,6 +153,8 @@ class MainActivity : AppCompatActivity() {
         mWebView!!.webChromeClient = WebChromeClient()
         mWebView!!.webViewClient = CustomWebViewClientv2()
         //WebView.setWebContentsDebuggingEnabled(true);
+
+
     }
 
     override fun onPointerCaptureChanged(hasCapture: Boolean) {}
@@ -152,6 +163,9 @@ class MainActivity : AppCompatActivity() {
 
         private var cookies: String? = null
         private var user: User? = null
+        private lateinit var executor: Executor
+        private lateinit var biometricPrompt: BiometricPrompt
+        private lateinit var promptInfo: BiometricPrompt.PromptInfo
         //Get OneSignal Device Data Push Notifications
 
         @Throws(UnsupportedEncodingException::class)
@@ -246,6 +260,60 @@ class MainActivity : AppCompatActivity() {
             })
         }
 
+        private fun promptInfo() {
+            val promptInfo = BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Entre com sua biometria")
+                .setNegativeButtonText("Cancelar")
+                .build()
+
+            val executor = ContextCompat.getMainExecutor(this@MainActivity)
+
+            val biometricPrompt = BiometricPrompt(this@MainActivity, executor,
+                object : BiometricPrompt.AuthenticationCallback() {
+                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                        // Autenticação biométrica bem-sucedida
+                        Toast.makeText(applicationContext, "Authentication succeeded!", Toast.LENGTH_SHORT).show()
+                    }
+
+                    override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                        Toast.makeText(applicationContext, "Authentication Error!", Toast.LENGTH_SHORT).show()
+                    }
+
+                    override fun onAuthenticationFailed() {
+                        Toast.makeText(applicationContext, "Authentication Failed!", Toast.LENGTH_SHORT).show()
+                    }
+                })
+
+            biometricPrompt.authenticate(promptInfo)
+        }
+
+        private fun biometric() {
+            val biometricManager = BiometricManager.from(this@MainActivity)
+            when (biometricManager.canAuthenticate()) {
+                BiometricManager.BIOMETRIC_SUCCESS -> {
+                    promptInfo()
+                }
+                BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
+                    // O dispositivo não possui hardware de autenticação biométrica.
+                }
+                BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
+                    // O hardware de autenticação biométrica não está disponível no momento.
+                }
+                BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
+                    // Não há impressões digitais/faces cadastradas no dispositivo.
+                }
+                BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED -> {
+                    TODO()
+                }
+                BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED -> {
+                    TODO()
+                }
+                BiometricManager.BIOMETRIC_STATUS_UNKNOWN -> {
+                    TODO()
+                }
+            }
+        }
+
         override fun onPageFinished(webview: WebView?, url: String?) {
             progressBar!!.setVisibility(View.GONE)
             this@MainActivity.progressBar!!.setProgress(100)
@@ -337,6 +405,7 @@ class MainActivity : AppCompatActivity() {
             this@MainActivity.progressBar!!.progress = 0
             super.onPageStarted(view, url, favicon)
         }
+
     }
 
     override fun onStop() {
