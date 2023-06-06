@@ -3,6 +3,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.*
 import android.graphics.Bitmap
+import android.hardware.biometrics.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +14,7 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import br.com.rededuque.android.extensions.toBase64
@@ -263,7 +265,7 @@ class MainActivity : AppCompatActivity() {
         private fun promptInfo() {
             val promptInfo = BiometricPrompt.PromptInfo.Builder()
                 .setTitle("Entre com sua biometria")
-                .setNegativeButtonText("Cancelar")
+                .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
                 .build()
 
             val executor = ContextCompat.getMainExecutor(this@MainActivity)
@@ -287,29 +289,33 @@ class MainActivity : AppCompatActivity() {
             biometricPrompt.authenticate(promptInfo)
         }
 
-        private fun biometric() {
+        private fun initBiometric(): Boolean {
             val biometricManager = BiometricManager.from(this@MainActivity)
             when (biometricManager.canAuthenticate()) {
                 BiometricManager.BIOMETRIC_SUCCESS -> {
                     promptInfo()
+                    return true
                 }
                 BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
                     // O dispositivo não possui hardware de autenticação biométrica.
+                    return false
                 }
                 BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
                     // O hardware de autenticação biométrica não está disponível no momento.
+                    return false
                 }
                 BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
                     // Não há impressões digitais/faces cadastradas no dispositivo.
+                    return false
                 }
                 BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED -> {
-                    TODO()
+                    return false
                 }
                 BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED -> {
-                    TODO()
+                    return false
                 }
                 BiometricManager.BIOMETRIC_STATUS_UNKNOWN -> {
-                    TODO()
+                    return false
                 }
             }
         }
@@ -363,6 +369,9 @@ class MainActivity : AppCompatActivity() {
                 // Restore Authentication token data
                 var idlToken = Utils.readFromPreferences(applicationContext, "tokenSAVED","")
                 if (!idlToken.isNullOrBlank()){
+                    // Biometric request
+                    initBiometric()
+
                     webview!!.stopLoading()
                     var urlString = "$url&idL=$idlToken".toHttpUrlOrNull()
                     webview.loadUrl(urlString.toString())
