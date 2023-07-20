@@ -265,7 +265,7 @@ class MainActivity : AppCompatActivity() {
         private fun promptInfo() {
             val promptInfo = BiometricPrompt.PromptInfo.Builder()
                 .setTitle("Entre com sua biometria")
-                .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
+                .setAllowedAuthenticators(BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
                 .build()
 
             val executor = ContextCompat.getMainExecutor(this@MainActivity)
@@ -289,36 +289,46 @@ class MainActivity : AppCompatActivity() {
             biometricPrompt.authenticate(promptInfo)
         }
 
-        private fun initBiometric(): Boolean {
+        private fun initBiometric() {
             val biometricManager = BiometricManager.from(this@MainActivity)
-            when (biometricManager.canAuthenticate()) {
+            return when (biometricManager.canAuthenticate()) {
                 BiometricManager.BIOMETRIC_SUCCESS -> {
                     promptInfo()
-                    return true
                 }
                 BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
                     // O dispositivo não possui hardware de autenticação biométrica.
-                    return false
                 }
                 BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
                     // O hardware de autenticação biométrica não está disponível no momento.
-                    return false
                 }
                 BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
                     // Não há impressões digitais/faces cadastradas no dispositivo.
-                    return false
                 }
                 BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED -> {
-                    return false
                 }
                 BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED -> {
-                    return false
                 }
                 BiometricManager.BIOMETRIC_STATUS_UNKNOWN -> {
-                    return false
                 }
+                else -> {}
             }
         }
+
+        private fun initBiometricV2(): Boolean {
+            val biometricManager = BiometricManager.from(this@MainActivity)
+            return when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
+                0 -> true
+                else -> false
+            }
+        }
+
+        private fun initBiometricV3(): Boolean {
+            val biometricManager = BiometricManager.from(this@MainActivity)
+            return when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
+                0 -> true
+                else -> false
+            }
+        }        
 
         override fun onPageFinished(webview: WebView?, url: String?) {
             progressBar!!.setVisibility(View.GONE)
@@ -370,11 +380,13 @@ class MainActivity : AppCompatActivity() {
                 var idlToken = Utils.readFromPreferences(applicationContext, "tokenSAVED","")
                 if (!idlToken.isNullOrBlank()){
                     // Biometric request
-                    initBiometric()
-
-                    webview!!.stopLoading()
-                    var urlString = "$url&idL=$idlToken".toHttpUrlOrNull()
-                    webview.loadUrl(urlString.toString())
+                    if (initBiometricV2()){
+                        Toast.makeText(applicationContext, "Biometria Positiva", Toast.LENGTH_SHORT).show()
+                    } else {
+                        webview!!.stopLoading()
+                        var urlString = "$url&idL=$idlToken".toHttpUrlOrNull()
+                        webview.loadUrl(urlString.toString())
+                    }
                 }
             }
             super.onPageFinished(webview, url)
