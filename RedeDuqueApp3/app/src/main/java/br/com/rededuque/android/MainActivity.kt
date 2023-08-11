@@ -1,9 +1,9 @@
 package br.com.rededuque.android
+
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.*
 import android.graphics.Bitmap
-import android.hardware.biometrics.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -15,25 +15,26 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import br.com.rededuque.android.extensions.toBase64
-import br.com.rededuque.android.services.HttpClientWeb
 import br.com.rededuque.android.model.UrlServer
 import br.com.rededuque.android.model.User
 import br.com.rededuque.android.parse.Json
+import br.com.rededuque.android.services.HttpClient
+import br.com.rededuque.android.services.HttpClientWeb
 import br.com.rededuque.android.utils.*
+import com.android.volley.Request
 import com.google.android.material.snackbar.Snackbar
 import com.onesignal.*
 import okhttp3.*
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.json.JSONObject
 import java.io.IOException
 import java.io.UnsupportedEncodingException
-import java.net.URLDecoder
-import br.com.rededuque.android.services.HttpClient
-import com.android.volley.Request
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.net.URL
+import java.net.URLDecoder
 import java.util.concurrent.Executor
 import javax.security.auth.callback.Callback
 
@@ -154,6 +155,7 @@ class MainActivity : AppCompatActivity() {
         mWebView!!.settings.builtInZoomControls = false
         mWebView!!.webChromeClient = WebChromeClient()
         mWebView!!.webViewClient = CustomWebViewClientv2()
+
         //WebView.setWebContentsDebuggingEnabled(true);
 
 
@@ -265,7 +267,8 @@ class MainActivity : AppCompatActivity() {
         private fun promptInfo() {
             val promptInfo = BiometricPrompt.PromptInfo.Builder()
                 .setTitle("Entre com sua biometria")
-                .setAllowedAuthenticators(BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+                .setSubtitle("Faça Login usando seuas  ")
+                .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
                 .build()
 
             val executor = ContextCompat.getMainExecutor(this@MainActivity)
@@ -316,7 +319,7 @@ class MainActivity : AppCompatActivity() {
 
         private fun initBiometricV2(): Boolean {
             val biometricManager = BiometricManager.from(this@MainActivity)
-            return when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
+            return when (biometricManager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)) {
                 0 -> true
                 else -> false
             }
@@ -379,13 +382,27 @@ class MainActivity : AppCompatActivity() {
                 // Restore Authentication token data
                 var idlToken = Utils.readFromPreferences(applicationContext, "tokenSAVED","")
                 if (!idlToken.isNullOrBlank()){
+                    //Adding idL token inside URL
+                    webview!!.stopLoading()
+                    var urlString = "$url&idL=$idlToken".toHttpUrlOrNull()
+                    webview.loadUrl(urlString.toString())
+
                     // Biometric request
                     if (initBiometricV2()){
                         Toast.makeText(applicationContext, "Biometria Positiva", Toast.LENGTH_SHORT).show()
+
+                        webview.evaluateJavascript("javascript:login()", ValueCallback{
+                            Log.d("Login dipastched...", "Login");
+                        })
+
+//                        webview.evaluateJavascript("(function() { \$('#btLogin').click(); return 'test'; })();",
+//                            ValueCallback<String?> { s ->
+//                                Log.d("LogName", s!!) // Prints the string 'null' NOT Java null
+//                            })
                     } else {
-                        webview!!.stopLoading()
-                        var urlString = "$url&idL=$idlToken".toHttpUrlOrNull()
-                        webview.loadUrl(urlString.toString())
+//                        webview!!.stopLoading()
+//                        var urlString = "$url&idL=$idlToken".toHttpUrlOrNull()
+//                        webview.loadUrl(urlString.toString())
                     }
                 }
             }
