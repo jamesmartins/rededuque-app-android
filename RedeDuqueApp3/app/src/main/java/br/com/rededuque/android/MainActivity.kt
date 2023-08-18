@@ -2,7 +2,7 @@ package br.com.rededuque.android
 
 import android.app.AlarmManager
 import android.app.PendingIntent
-import android.content.*
+import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
@@ -27,14 +27,12 @@ import br.com.rededuque.android.services.HttpClientWeb
 import br.com.rededuque.android.utils.*
 import com.android.volley.Request
 import com.google.android.material.snackbar.Snackbar
-import com.onesignal.*
-import okhttp3.*
+import com.onesignal.OneSignal
+import okhttp3.Call
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.OkHttpClient
 import org.json.JSONObject
 import java.io.IOException
-import java.io.UnsupportedEncodingException
-import java.net.URL
-import java.net.URLDecoder
 import java.util.concurrent.Executor
 import javax.security.auth.callback.Callback
 
@@ -172,19 +170,6 @@ class MainActivity : AppCompatActivity() {
         private lateinit var promptInfo: BiometricPrompt.PromptInfo
         //Get OneSignal Device Data Push Notifications
 
-        @Throws(UnsupportedEncodingException::class)
-        fun splitQuery(url: URL): Map<String, String>? {
-            val query_pairs: MutableMap<String, String> = LinkedHashMap()
-            val query: String = url.getQuery()
-            val pairs = query.split("&").toTypedArray()
-            for (pair in pairs) {
-                val idx = pair.indexOf("=")
-                query_pairs[URLDecoder.decode(pair.substring(0, idx), "UTF-8")] =
-                    URLDecoder.decode(pair.substring(idx + 1), "UTF-8")
-            }
-            return query_pairs
-        }
-
         private fun splitSearchStrFromQueryUrl(url : String, key: String): String? {
              var url = url.toHttpUrlOrNull()
             return if (url != null) {
@@ -264,10 +249,10 @@ class MainActivity : AppCompatActivity() {
             })
         }
 
-        private fun promptInfo() {
+        private fun promptInfo(completion: (success: Boolean) -> Unit) {
             val promptInfo = BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Entre com sua biometria")
-                .setSubtitle("Faça Login usando seuas  ")
+                .setTitle("Autenticação")
+                .setSubtitle("Faça Login usando suas credenciais:")
                 .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
                 .build()
 
@@ -277,15 +262,18 @@ class MainActivity : AppCompatActivity() {
                 object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         // Autenticação biométrica bem-sucedida
-                        Toast.makeText(applicationContext, "Authentication succeeded!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(applicationContext, "Autenticação com sucesso!", Toast.LENGTH_SHORT).show()
+                        completion(true)
                     }
 
                     override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                        Toast.makeText(applicationContext, "Authentication Error!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(applicationContext, "Falha da autenticação!", Toast.LENGTH_SHORT).show()
+                        completion(false)
                     }
 
                     override fun onAuthenticationFailed() {
-                        Toast.makeText(applicationContext, "Authentication Failed!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(applicationContext, "Falha da autenticação!", Toast.LENGTH_SHORT).show()
+                        completion(false)
                     }
                 })
 
@@ -296,7 +284,7 @@ class MainActivity : AppCompatActivity() {
             val biometricManager = BiometricManager.from(this@MainActivity)
             return when (biometricManager.canAuthenticate()) {
                 BiometricManager.BIOMETRIC_SUCCESS -> {
-                    promptInfo()
+//                    promptInfo()
                 }
                 BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
                     // O dispositivo não possui hardware de autenticação biométrica.
@@ -338,7 +326,7 @@ class MainActivity : AppCompatActivity() {
             this@MainActivity.progressBar!!.setProgress(100)
             var userLogged: User? = null
 
-            // Status User Logged
+            // Status User Logged or register form user
             if (url!!.contains("novoMenu.do") or url!!.contains("cadastro_V2.do")) {
                 // Get RedeDuque Personal User Logged data
                 var IDUkey = splitSearchStrFromQueryUrl(url, "idU")
@@ -386,27 +374,26 @@ class MainActivity : AppCompatActivity() {
                     webview!!.stopLoading()
                     var urlString = "$url&idL=$idlToken".toHttpUrlOrNull()
                     webview.loadUrl(urlString.toString())
-
-                    // Biometric request
-                    if (initBiometricV2()){
-                        Toast.makeText(applicationContext, "Biometria Positiva", Toast.LENGTH_SHORT).show()
-
-                        webview.evaluateJavascript("javascript:login()", ValueCallback{
-                            Log.d("Login dipastched...", "Login");
-                        })
-
-//                        webview.evaluateJavascript("(function() { \$('#btLogin').click(); return 'test'; })();",
-//                            ValueCallback<String?> { s ->
-//                                Log.d("LogName", s!!) // Prints the string 'null' NOT Java null
-//                            })
-                    } else {
-//                        webview!!.stopLoading()
-//                        var urlString = "$url&idL=$idlToken".toHttpUrlOrNull()
-//                        webview.loadUrl(urlString.toString())
-                    }
                 }
             }
             super.onPageFinished(webview, url)
+
+            //https://www.google.com/maps?saddr=My+Location&daddr=-23.4940953,-46.9637423
+
+
+            // Logon View - After Logon data reloaded with idL KEY
+            if (url.contains("app.do") and url.contains("idL=")) {
+                // Biometric request
+                if (initBiometricV2()){
+                    promptInfo(completion = {
+                       if (it){
+                           webview!!.evaluateJavascript("javascript:login()", ValueCallback{
+                               Log.d("Login dipastched...", "Login");
+                           })
+                       }
+                    })
+                }
+            }
         }
 
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
@@ -424,8 +411,9 @@ class MainActivity : AppCompatActivity() {
                 view.stopLoading()
             }
             //  https://maps.google.com/
-            if (url.contains("maps.google.com")) {
-                var intent = Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url))
+            if (url.contains("www.google.com/maps?")) {
+                var intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                startActivity(intent)
                 if (intent.resolveActivity(packageManager) != null) {
                     startActivity(Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url)))
                 } else {
