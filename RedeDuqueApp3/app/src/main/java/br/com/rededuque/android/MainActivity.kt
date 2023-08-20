@@ -399,10 +399,10 @@ class MainActivity : AppCompatActivity() {
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
             view.loadUrl(url)
             // Intecept Data Valiables objects
-            if (url.contains("waze://")) {
-                var intent = Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url))
+            if (url.contains("www.waze.com")) {
+                var intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                 if (intent.resolveActivity(packageManager) != null) {
-                    startActivity(Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url)))
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                 } else {
                     intent =
                         Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.waze"))
@@ -415,10 +415,10 @@ class MainActivity : AppCompatActivity() {
                 var intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                 startActivity(intent)
                 if (intent.resolveActivity(packageManager) != null) {
-                    startActivity(Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url)))
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                 } else {
                     intent =
-                        Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.waze"))
+                        Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.apps.maps&hl=pt_BR&gl=US"))
                     startActivity(intent)
                 }
                 view.stopLoading()
