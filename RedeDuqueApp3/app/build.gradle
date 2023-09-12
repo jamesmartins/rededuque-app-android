@@ -3,16 +3,18 @@ apply plugin: 'kotlin-android'
 
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
 //    buildToolsVersion "29.0.3"
 
     defaultConfig {
 
         applicationId "br.com.rededuque.android"
         minSdkVersion 21
-        targetSdkVersion 31
-        versionCode 32
-        versionName "1.4.31"  //1.0.30 was the last version without locatoin services
+        targetSdkVersion 33
+        versionCode 34
+        //1.0.30 was the last version without locatoin services
+        //1.0.33 was the last version without biometria
+        versionName "1.4.34"
 //        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

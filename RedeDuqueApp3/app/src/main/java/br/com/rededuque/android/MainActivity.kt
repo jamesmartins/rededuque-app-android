@@ -2,6 +2,7 @@ package br.com.rededuque.android
 
 import android.app.AlarmManager
 import android.app.PendingIntent
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -400,28 +401,44 @@ class MainActivity : AppCompatActivity() {
             view.loadUrl(url)
             // Intecept Data Valiables objects
             if (url.contains("www.waze.com")) {
-                var intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                if (intent.resolveActivity(packageManager) != null) {
-                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-                } else {
-                    intent =
-                        Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.waze"))
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    startActivity(intent)
+                } catch (ex: ActivityNotFoundException) {
+                    // If Waze is not installed, open it in Google Play:
+                    val intent =
+                        Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.waze"))
                     startActivity(intent)
                 }
                 view.stopLoading()
             }
-            //  https://maps.google.com/
+
+            // Share by www.google.com
             if (url.contains("www.google.com/maps?")) {
-                var intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                startActivity(intent)
-                if (intent.resolveActivity(packageManager) != null) {
-                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-                } else {
-                    intent =
+                try {
+                    var intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    intent.setPackage("com.google.android.apps.maps")
+                    startActivity(intent)
+                } catch (ex : ActivityNotFoundException){
+                    val intent =
                         Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.apps.maps&hl=pt_BR&gl=US"))
                     startActivity(intent)
                 }
+
                 view.stopLoading()
+            }
+
+            // Share by maps.google.com
+            if (url.contains("maps.google.com")) {
+                try {
+                    var intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    intent.setPackage("com.google.android.apps.maps")
+                    startActivity(intent)
+                } catch (ex : ActivityNotFoundException){
+                    val intent =
+                        Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.apps.maps&hl=pt_BR&gl=US"))
+                    startActivity(intent)
+                }
             }
             return true
         }
