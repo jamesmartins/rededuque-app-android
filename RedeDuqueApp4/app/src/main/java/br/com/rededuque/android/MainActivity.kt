@@ -37,6 +37,12 @@ import java.io.IOException
 import java.util.concurrent.Executor
 import javax.security.auth.callback.Callback
 
+/**
+ * REDEDUQUE APP VERSION 4
+ * HIBRYD SINGLE ACTIVITY + WEBVIEW LOADING PAGES
+ * URL DEFAULT: https://adm.bunkerapp.com.br/app/intro.do?key=sgXRkwFYRfk¢
+ * FEATURES: user data saved by url handle, recognize by Biometrec methods on login authenticating
+ */
 
 class MainActivity : AppCompatActivity() {
 
