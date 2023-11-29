@@ -38,11 +38,16 @@ import java.util.concurrent.Executor
 import javax.security.auth.callback.Callback
 
 /**
- * REDEDUQUE APP VERSION 4
+ * REDEDUQUE APP VERSION 5 - more native version
  * HIBRYD SINGLE ACTIVITY + WEBVIEW LOADING PAGES
+ * Gradle gradle-6.5
+ * Gradle android 4.1.1
+ * Kotlin 1.4
  * URL DEFAULT: https://adm.bunkerapp.com.br/app/intro.do?key=sgXRkwFYRfk¢
  * FEATURES: user data saved by url handle, recognize by Biometrec methods on login authenticating
  */
+
+
 
 class MainActivity : AppCompatActivity() {
 

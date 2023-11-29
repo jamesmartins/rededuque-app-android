@@ -2,15 +2,18 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 /**
- * REDEDUQUE APP VERSION 4
+ * REDEDUQUE APP VERSION 5 - more native version
  * HIBRYD SINGLE ACTIVITY + WEBVIEW LOADING PAGES
+ * Gradle gradle-6.5
+ * Gradle android 4.1.1
+ * Kotlin 1.4
  * URL DEFAULT: https://adm.bunkerapp.com.br/app/intro.do?key=sgXRkwFYRfk¢
  * FEATURES: user data saved by url handle, recognize by Biometrec methods on login authenticating
  */
 
+
 android {
     compileSdkVersion 33
-//    buildToolsVersion "29.0.3"
 
     defaultConfig {
 
@@ -18,9 +21,11 @@ android {
         minSdkVersion 21
         targetSdkVersion 33
         versionCode 34
-        //1.0.30 was the last version without locatoin services
-        //1.0.33 was the last version without biometria
-        versionName "1.4.34"
+        //1.4.36 was the version with more native parts
+        //1.4.35 was the last version with biometria
+        //1.4.34 was the last version with OneSignal
+        //1.4.34 was the last version without location services
+        versionName "1.4.36"
 //        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -30,10 +35,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+//    compileOptions {
+//        sourceCompatibility JavaVersion.
+//        targetCompatibility JavaVersion.VERSION_1_8
+//    }
 }
 
 dependencies {
