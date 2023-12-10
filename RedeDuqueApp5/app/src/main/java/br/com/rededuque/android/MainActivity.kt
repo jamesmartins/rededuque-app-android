@@ -26,12 +26,13 @@ import br.com.rededuque.android.parse.Json
 import br.com.rededuque.android.services.HttpClient
 import br.com.rededuque.android.services.HttpClientWeb
 import br.com.rededuque.android.utils.*
-import com.android.volley.Request
+
 import com.google.android.material.snackbar.Snackbar
 import com.onesignal.OneSignal
 import okhttp3.Call
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.json.JSONObject
 import java.io.IOException
 import java.util.concurrent.Executor
@@ -40,9 +41,9 @@ import javax.security.auth.callback.Callback
 /**
  * REDEDUQUE APP VERSION 5 - more native version
  * HIBRYD SINGLE ACTIVITY + WEBVIEW LOADING PAGES
- * Gradle gradle-6.5
- * Gradle android 4.1.1
- * Kotlin 1.4
+ * Gradle gradle-7.3.3
+ * Gradle android 7.2.2
+ * Kotlin 1.4.20
  * URL DEFAULT: https://adm.bunkerapp.com.br/app/intro.do?key=sgXRkwFYRfk¢
  * FEATURES: user data saved by url handle, recognize by Biometrec methods on login authenticating
  */
@@ -205,7 +206,7 @@ class MainActivity : AppCompatActivity() {
         private fun processRedeDuqueUrlKey(keyValue : String, companyId: Int = PROJECT_ID, completion: (success: Boolean, user: User?) -> Unit) {
             val postparams = Json.getLoggedUser(keyValue.toBase64(), companyId)
 
-            HttpClient.getInstance.postAsync(Request.Method.POST, mUrlUserSearchKeyData, postparams, object : Callback, okhttp3.Callback {
+            HttpClient.getInstance.postAsync(mUrlUserSearchKeyData, postparams, object : Callback, okhttp3.Callback {
 
                 override fun onFailure(call: Call, e: IOException) {
                     completion(false,  User())
@@ -240,7 +241,7 @@ class MainActivity : AppCompatActivity() {
         private fun sendOneSignalDataToRedeDuque(userLogged : User, completion: (success: Boolean) -> Unit) {
             val postparams = Json.getUserOneSignalData(userLogged)
 
-            HttpClient.getInstance.postAsync(Request.Method.POST, mUrlUserPushDataInformation, postparams, object : Callback, okhttp3.Callback {
+            HttpClient.getInstance.postAsync(mUrlUserPushDataInformation, postparams, object : Callback, okhttp3.Callback {
 
                 override fun onFailure(call: Call, e: IOException) {
                     completion(false)
