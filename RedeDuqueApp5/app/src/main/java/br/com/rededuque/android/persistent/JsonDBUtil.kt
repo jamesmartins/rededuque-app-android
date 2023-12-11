@@ -16,10 +16,30 @@ object JsonDBUtil {
 
     const val VIEW_INTRO_HOME = "VIEW_INTRO_HOME"
     const val VIEW_LOGIN = "VIEW_LOGIN"
+    const val DATA_CONFIG_STYLES = "DATA_CONFIG_STYLES"
 
     fun init(context: Context) {
         if (prefs == null)
             prefs = context.getSharedPreferences(DEFAULT_DATA_KEY, Context.MODE_PRIVATE)
+    }
+
+    fun setDataConfigStyles(keyName: String = DATA_CONFIG_STYLES, data: String) {
+        if (prefs != null) {
+            val editor: SharedPreferences.Editor = prefs!!.edit()
+            val gson = Gson()
+            val dataJson = gson.toJson(data)
+            editor.putString(keyName, dataJson)
+            editor.commit()
+        }
+    }
+
+    fun getDataConfigStyles(): String {
+        if (prefs != null) {
+            val jsonSaved = prefs!!.getString(VIEW_INTRO_HOME, "")
+            val gson = Gson()
+            return gson.fromJson(jsonSaved, object : TypeToken<String>() {}.type)
+        }
+        return ""
     }
 
     fun setIntroHome(keyName: String = VIEW_INTRO_HOME, data: String) {
@@ -32,7 +52,7 @@ object JsonDBUtil {
         }
     }
 
-    fun getIntoHome(): String {
+    fun getIntroHome(): String {
         if (prefs != null) {
             val jsonSaved = prefs!!.getString(VIEW_INTRO_HOME, "")
             val gson = Gson()

@@ -16,17 +16,6 @@ val mEndPointAuth = "/Auth.do"
 val mEndPointValue = "/VerificaSaldo.do"
 val mEndPointVicheles = "/Veiculos_App.do"
 
-
-
-// Antiga
-// 2018
-//val mUrlStatic = "http://adm.bunker.mk/appduque/"
-
-// atual nova
-// 15/09/2022
-//val mUrlStatic = "https://adm.bunkerapp.com.br/appduque/"
-
-// Novissima (muito impacto)
 // 15/09/2022
 val mUrlStatic = "https://adm.bunkerapp.com.br/app/intro.do?key=sgXRkwFYRfk¢"
 
@@ -38,6 +27,14 @@ val mUrlUserPushDataInformation = "https://adm.bunker.mk/wsjson/TokenAppPush.do"
 const val FIRST_LOGIN_DONE = "FIRST_LOGIN_DONE"
 const val VERIFY_KEY_CUSTOMER = "VERIFY_KEY_CUSTOMER"
 const val PROJECT_ID = 19  // ID NUMBER REDE DUQUE PROJECT
+
+// Antiga
+// 2018
+//val mUrlStatic = "http://adm.bunker.mk/appduque/"
+
+// atual nova
+// 15/09/2022
+//val mUrlStatic = "https://adm.bunkerapp.com.br/appduque/"
 
 
 

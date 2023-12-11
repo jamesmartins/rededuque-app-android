@@ -115,21 +115,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    /**
-     * Return the availability of GooglePlayServices
-     */
-//    private fun isGooglePlayServicesAvailable(): Boolean {
-//        val googleApiAvailability = GoogleApiAvailability.getInstance()
-//        val status = googleApiAvailability.isGooglePlayServicesAvailable(this)
-//        if (status != ConnectionResult.SUCCESS) {
-//            if (googleApiAvailability.isUserResolvableError(status)) {
-//                googleApiAvailability.getErrorDialog(this, status, 2404).show()
-//            }
-//            return false
-//        }
-//        return true
-//    }
-
     private fun doLoadRequest(explicityUrl: Boolean) {
         if (!isConnected) {
             Toast.makeText(this, "Falta de Conexão!", Toast.LENGTH_SHORT).show()
