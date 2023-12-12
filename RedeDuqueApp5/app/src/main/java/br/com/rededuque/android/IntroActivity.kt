@@ -7,8 +7,6 @@ import br.com.rededuque.android.model.User
 import br.com.rededuque.android.utils.PROJECT_ID
 import br.com.rededuque.android.utils.Utils
 
-
-
 class IntroActivity : AppCompatActivity() {
     private val TAG = IntroActivity::class.java.simpleName
     private var isConnected = false
