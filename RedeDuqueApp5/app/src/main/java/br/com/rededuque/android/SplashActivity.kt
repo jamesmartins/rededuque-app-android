@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.os.Handler
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
+import br.com.rededuque.android.model.ConfigApp
+import br.com.rededuque.android.utils.PROJECT_ID
 
 class SplashActivity : AppCompatActivity() {
     private val SPLASH_TIME_OUT: Long = 1000
@@ -20,5 +22,9 @@ class SplashActivity : AppCompatActivity() {
                 finish()
             }
         }, SPLASH_TIME_OUT)
+    }
+
+    private fun loadConfigFromRedeDuque(url: String, companyId: Int = PROJECT_ID, completion: (success: Boolean, configApp: ConfigApp?) -> Unit) {
+
     }
 }

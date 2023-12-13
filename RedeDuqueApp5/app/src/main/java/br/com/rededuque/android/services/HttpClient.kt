@@ -12,6 +12,7 @@ class HttpClient {
     companion object {
         val getInstance: HttpClient by lazy { HolderLazy.INSTANCE }
         val JSON: MediaType = "application/json; charset=utf-8".toMediaTypeOrNull()!!
+        var authorizationCode = "VVNOMFZHeldxMkVJR1JCWmZkNVpxMU1icHFGRzhROHlXUWZrTnowVEQ4Y0VqekFGWURIUEt3wqLCog=="
     }
 
     private object HolderLazy {
@@ -23,7 +24,6 @@ class HttpClient {
         val request = Request.Builder()
             .url(url)
             .build()
-
         val response = client.newCall(request).execute()
         return response.body!!.string()
     }
@@ -32,6 +32,19 @@ class HttpClient {
         val body = json.toRequestBody(JSON)
         val request = Request.Builder()
             .method("POST", body)
+            .url(url)
+            .post(body)
+            .build()
+        val call = client.newCall(request)
+        call.enqueue(callback)
+        return call
+    }
+
+    fun postAsync2(url: String, json: String, callback: Callback): Call {
+        val body = json.toRequestBody(JSON)
+        val request = Request.Builder()
+            .method("POST", body)
+            .addHeader("authorizationCode", authorizationCode)
             .url(url)
             .post(body)
             .build()

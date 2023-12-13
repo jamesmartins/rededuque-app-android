@@ -1,6 +1,6 @@
 package br.com.rededuque.android.model
 
-class Intro(
+class IntroView(
     var intro : String,
     var pagina: String,
     var background: String,
@@ -9,4 +9,4 @@ class Intro(
     var corbotaoOn : String,
     var textoContraste : String,
     var background_img : String,
-    var introMenus : ArrayList<IntroMenu>) {}
+    var introMenus : ArrayList<IntroViewMenu>) {}

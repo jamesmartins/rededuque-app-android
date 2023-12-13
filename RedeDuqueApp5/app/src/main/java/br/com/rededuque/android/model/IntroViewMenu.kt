@@ -1,6 +1,6 @@
 package br.com.rededuque.android.model
 
-class IntroMenu(
+class IntroViewMenu(
    var titulo : String,
    var action : String
 ) {}
