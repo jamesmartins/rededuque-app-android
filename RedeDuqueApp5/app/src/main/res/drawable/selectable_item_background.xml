@@ -4,6 +4,5 @@
         android:state_pressed="true"/>
     <item android:drawable="@color/corbotaoOn"
         android:state_focused="true"/>
-
     <item android:drawable="@color/corbotao"/>
 </selector>

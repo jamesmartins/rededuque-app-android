@@ -10,23 +10,23 @@ package br.com.rededuque.android.utils
  *
  */
 
-val mUrlGeneralBase = "https://adm.bunkerapp.com.br/wsjson"
-val mEndPointConfig = "/APP.do"
-val mEndPointAuth = "/Auth.do"
-val mEndPointValue = "/VerificaSaldo.do"
-val mEndPointVicheles = "/Veiculos_App.do"
+const val mUrlGeneralBase = "https://adm.bunkerapp.com.br/wsjson"
+const val mEndPointConfig = "/APP.do"
+const val mEndPointAuth = "/Auth.do"
+const val mEndPointValue = "/VerificaSaldo.do"
+const val mEndPointVicheles = "/Veiculos_App.do"
 
 // TELA DE LOGIN
-val mLoginSignup = "https://adm.bunkerapp.com.br/app/consulta_V2.do?key=c2dYUmt3RllSZmvCog==&t=q9HO3i0gp£Ewp£XCk1Kl6BJAFqp6wNu6sD"
-val mLoginRecoverPasswd = "adm.bunkerapp.com.br/app/recuperacaoSenha.do?key=sgXRkwFYRfk¢&t=CxWc6B4DViUXRLKgEsQ6mLjsfKY9o6UE&cpf="
+const val mLoginSignup = "https://adm.bunkerapp.com.br/app/consulta_V2.do?key=c2dYUmt3RllSZmvCog==&t=q9HO3i0gp£Ewp£XCk1Kl6BJAFqp6wNu6sD"
+const val mLoginRecoverPasswd = "adm.bunkerapp.com.br/app/recuperacaoSenha.do?key=sgXRkwFYRfk¢&t=CxWc6B4DViUXRLKgEsQ6mLjsfKY9o6UE&cpf="
 
 // 15/09/2022
-val mUrlStatic = "https://adm.bunkerapp.com.br/app/intro.do?key=sgXRkwFYRfk¢"
+const val mUrlStatic = "https://adm.bunkerapp.com.br/app/intro.do?key=sgXRkwFYRfk¢"
 
 val mUrlServices = "https://adm.bunker.mk/wsjson/"
 val mUrlDecriptService = "https://adm.bunker.mk/wsjson/CookieDec.do"
-val mUrlUserSearchKeyData = "https://adm.bunker.mk/wsjson/ConsultaCli.do"
-val mUrlUserPushDataInformation = "https://adm.bunker.mk/wsjson/TokenAppPush.do"
+const val mUrlUserSearchKeyData = "https://adm.bunker.mk/wsjson/ConsultaCli.do"
+const val mUrlUserPushDataInformation = "https://adm.bunker.mk/wsjson/TokenAppPush.do"
 
 const val FIRST_LOGIN_DONE = "FIRST_LOGIN_DONE"
 const val VERIFY_KEY_CUSTOMER = "VERIFY_KEY_CUSTOMER"

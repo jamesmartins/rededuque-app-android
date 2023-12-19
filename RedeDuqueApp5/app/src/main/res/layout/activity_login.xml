@@ -21,14 +21,13 @@
             app:layout_constraintVertical_bias="0.119" />
 
     <Button
-            android:id="@+id/btnView"
+            android:id="@+id/btnLogin"
             android:text="LOGIN"
             android:textStyle="bold"
             android:textSize="16sp"
             android:fontFamily="sans-serif-black"
             android:textColor="@android:color/white"
             android:backgroundTint="#1f398d"
-            android:stateListAnimator="@drawable/button_state_list_animator"
             android:background="@drawable/btn_login_style"
             android:layout_width="match_parent"
             android:layout_height="50dp"

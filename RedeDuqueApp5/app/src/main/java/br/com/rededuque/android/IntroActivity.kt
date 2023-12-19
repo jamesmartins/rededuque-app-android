@@ -1,11 +1,13 @@
 package br.com.rededuque.android
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import br.com.rededuque.android.R.id
 import br.com.rededuque.android.model.ConfigApp
-import br.com.rededuque.android.model.User
 import br.com.rededuque.android.utils.PROJECT_ID
 import br.com.rededuque.android.utils.Utils
+
 
 class IntroActivity : AppCompatActivity() {
     private val TAG = IntroActivity::class.java.simpleName
@@ -18,10 +20,15 @@ class IntroActivity : AppCompatActivity() {
         isConnected = Utils.isNetworkConnected(applicationContext)
 
         // Load Views
-//        initViews()
+        initViews()
 
         // Load Url
 //        doLoadConfig(ACCESSEDSTATICURL)
+    }
+
+
+    fun initViews(){
+        findViewById<id.btnLogin>().
     }
 
     fun doLoadConfig() {
