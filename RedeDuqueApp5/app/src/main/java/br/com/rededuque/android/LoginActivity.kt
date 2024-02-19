@@ -13,7 +13,5 @@ class LoginActivity : AppCompatActivity() {
         super.onBackPressed()
     }
 
-
-
 }
 

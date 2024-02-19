@@ -3,7 +3,11 @@ package br.com.rededuque.android
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.Button
+import android.widget.TextView
 import br.com.rededuque.android.R.id
+import br.com.rededuque.android.extensions.toast
 import br.com.rededuque.android.model.ConfigApp
 import br.com.rededuque.android.utils.PROJECT_ID
 import br.com.rededuque.android.utils.Utils
@@ -12,6 +16,8 @@ import br.com.rededuque.android.utils.Utils
 class IntroActivity : AppCompatActivity() {
     private val TAG = IntroActivity::class.java.simpleName
     private var isConnected = false
+//    private lateinit var btnLoginMenu: Button
+//    private lateinit var btnLoginMenu: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +34,8 @@ class IntroActivity : AppCompatActivity() {
 
 
     fun initViews(){
-        findViewById<id.btnLogin>().
+        var btnLoginMenu = findViewById<View>(id.btnLoginMenu)
+        btnLoginMenu.setOnClickListener { toast("teste de botão login") }
     }
 
     fun doLoadConfig() {

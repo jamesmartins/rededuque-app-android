@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@android:color/black"
+            android:radius="25dp" />
+
+    <item android:drawable="@color/corbotaoOn"
+            android:radius="25dp"
+            android:left="0dp"
+            android:right="0dp"
+            android:top="0dp"
+            android:bottom="2dp"
+            android:state_pressed="true"/>
+
+    <item android:drawable="@color/corbotao"
+            android:radius="25dp"
+            android:left="0dp"
+            android:right="0dp"
+            android:top="0dp"
+            android:bottom="2dp"
+            android:state_pressed="false"/>
+
+</layer-list>

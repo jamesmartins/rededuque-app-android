@@ -2,8 +2,10 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 /**
- * REDEDUQUE APP VERSION 5 - more native version
- * HIBRYD SINGLE ACTIVITY + WEBVIEW LOADING PAGES
+ * REDEDUQUE APP VERSION 5 - middle native version
+ * INTRO NATIVE VIEW
+ * LOGIN NATIVE VIEW
+ * WEBVIEW ACTIVITY LOADING PAGES
  * Gradle gradle-6.5
  * Gradle android 4.1.1
  * Kotlin 1.4
