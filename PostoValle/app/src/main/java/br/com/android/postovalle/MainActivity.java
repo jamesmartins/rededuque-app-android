@@ -3,13 +3,11 @@ package br.com.android.postovalle;
 import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
-import android.provider.Settings;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -29,10 +27,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-import br.com.android.postovalle.model.UrlServer;
-import br.com.android.postovalle.model.User;
-import br.com.android.postovalle.utils.Constants;
-import br.com.android.postovalle.utils.Utils;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -209,14 +203,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View view) {
                                 // Build intent that displays the App settings screen.
-                                Intent intent = new Intent();
-                                intent.setAction(
-                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package",
-                                        BuildConfig.APPLICATION_ID, null);
-                                intent.setData(uri);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(intent);
+
                             }
                         });
             }
@@ -311,7 +298,7 @@ public class MainActivity extends AppCompatActivity {
         mWebView = findViewById(R.id.mwebview);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        mWebView.getSettings().setAppCacheEnabled(false);
+//        mWebView.getSettings().setAppCacheEnabled(false);
         mWebView.getSettings().setLoadsImagesAutomatically(true);
         mWebView.getSettings().setLoadWithOverviewMode(true);
         mWebView.getSettings().setUseWideViewPort(true);

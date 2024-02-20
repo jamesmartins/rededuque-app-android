@@ -1,8 +1,9 @@
-package br.com.rededuque.android.parse
+package br.com.android.postovalle.parse
 
-import br.com.rededuque.android.model.UrlServer
-import br.com.rededuque.android.model.User
-import br.com.rededuque.android.utils.PROJECT_ID
+
+import br.com.android.postovalle.model.UrlServer
+import br.com.android.postovalle.model.User
+import br.com.android.postovalle.utils.PROJECT_ID
 import org.json.JSONException
 import org.json.JSONObject
 import org.json.JSONStringer
