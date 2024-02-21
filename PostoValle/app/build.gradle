@@ -11,7 +11,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 33
         versionCode 5
-        versionName "1.4"  //last version without locatoin services
+        versionName "1.5"  //last version without locatoin services
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
