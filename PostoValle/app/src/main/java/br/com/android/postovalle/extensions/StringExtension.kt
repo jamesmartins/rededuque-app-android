@@ -1,4 +1,4 @@
-package br.com.android.postovalle.extension
+package br.com.android.postovalle.extensions
 
 import android.os.Build
 

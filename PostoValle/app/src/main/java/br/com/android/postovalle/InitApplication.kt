@@ -31,28 +31,4 @@ class InitApplication : Application() {
         OneSignal.initWithContext(this)
         OneSignal.setAppId(ONESIGNAL_APP_ID)
     }
-
-//    fun getRequestQueue(): RequestQueue? {
-//        if (mRequestQueue == null) {
-//            mRequestQueue = Volley.newRequestQueue(applicationContext)
-//        }
-//        return mRequestQueue
-//    }
-
-//    fun <T> addToRequestQueue(req: Request<T>, tag: String) {
-//        // set the default tag if tag is empty
-//        req.tag = if (TextUtils.isEmpty(tag)) TAG else tag
-//        getRequestQueue()?.add(req)
-//    }
-//
-//    fun <T> addToRequestQueue(req: Request<T>) {
-//        req.tag = TAG
-//        getRequestQueue()!!.add(req)
-//    }
-//
-//    fun cancelPendingRequests(tag: Any) {
-//        if (mRequestQueue != null) {
-//            mRequestQueue!!.cancelAll(tag)
-//        }
-//    }
 }

@@ -1,13 +1,8 @@
-package br.com.android.postovalle.extension
+package br.com.android.postovalle.extensions
 
 import android.content.Context
 import android.net.ConnectivityManager
-import android.util.TypedValue
-import android.view.View
-import android.view.WindowManager
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 
 /**
  * Created by james.martins on 17/01/18.
