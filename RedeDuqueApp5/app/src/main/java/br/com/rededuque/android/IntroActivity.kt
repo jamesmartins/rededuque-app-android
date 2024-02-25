@@ -35,7 +35,11 @@ class IntroActivity : AppCompatActivity() {
 
     fun initViews(){
         var btnLoginMenu = findViewById<View>(id.btnLoginMenu)
-        btnLoginMenu.setOnClickListener { toast("teste de botão login") }
+        btnLoginMenu.setOnClickListener {
+            startActivity(Intent(applicationContext, LoginActivity::class.java))
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+            finish()
+        }
     }
 
     fun doLoadConfig() {

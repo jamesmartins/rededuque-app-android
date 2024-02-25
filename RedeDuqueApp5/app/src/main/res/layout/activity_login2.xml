@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/layout_login"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        tools:ignore="MissingPrefix">
+
+<!--    <ImageButton-->
+<!--            android:id="@+id/btnBackHome"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_alignParentStart="true"-->
+<!--            android:layout_alignParentTop="true"-->
+<!--            android:layout_marginStart="10dp"-->
+<!--            android:layout_marginTop="20dp"-->
+<!--            android:padding="5dp"-->
+<!--            android:background="@drawable/ripple_effects"-->
+<!--            android:src="@drawable/ic_action_baseline_arrow_back" />-->
+
+    <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="100dp"
+            android:src="@drawable/logo_intro" />
+
+    <TextView
+            android:id="@+id/txtView"
+            fontPath="fonts/Avenir.ttc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imageView"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:scrollHorizontally="true"
+            android:layout_centerInParent="true"
+            android:text="Digite seu email pra entrar"
+            android:layout_marginTop="50dp"
+            android:textColor="#555555"
+            android:textSize="12sp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/fieldLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imageView"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginTop="90dp"
+            android:gravity="center"
+            android:textColorHint="@color/text_color_second">
+
+        <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/edtLogin"
+                fontPath="fonts/Avenir.ttc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:paddingTop="7dp"
+                android:singleLine="true"
+                android:text=""
+                android:textSize="15sp"
+                android:textColor="@color/text_color_primary"
+                android:textColorHighlight="@color/text_color_primary"
+                android:textColorHint="@color/text_color_primary"
+                android:visibility="visible"></androidx.appcompat.widget.AppCompatEditText>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/fieldPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fieldLogin"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:textColorHint="@color/text_color_second">
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtPasssword"
+                fontPath="fonts/Avenir.ttc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Senha"
+
+                android:imeActionLabel="Enviar"
+                android:imeOptions="actionSend"
+                android:inputType="textPassword"
+                android:paddingRight="110dp"
+                android:paddingTop="7dp"
+                android:text=""
+                android:textSize="15sp"
+                android:textColor="@color/text_color_primary"
+                android:textColorHighlight="@color/text_color_primary"
+                android:textColorHint="@color/text_color_primary">
+        </com.google.android.material.textfield.TextInputEditText>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+            android:id="@+id/txtRememberPassword"
+            fontPath="fonts/Avenir.ttc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/fieldPassword"
+            android:layout_alignRight="@+id/fieldPassword"
+            android:layout_below="@+id/fieldPassword"
+            android:gravity="right"
+            android:paddingRight="5dp"
+            android:paddingTop="10dp"
+            android:text="Trocar a senha"
+            android:textColor="#909090"
+            android:textSize="13sp" />
+
+    <Button
+            android:id="@+id/btnLogin"
+            fontPath="fonts/Avenir.ttc"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_above="@+id/pnlBottom"
+            android:layout_marginLeft="45dp"
+            android:layout_marginRight="45dp"
+            android:background="@drawable/btn_entrar"
+            android:backgroundTint="@color/colorPrimary"
+            android:text="Entrar"
+            android:textColor="@android:color/white" />
+
+    <LinearLayout
+            android:id="@+id/pnlBottom"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="40dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+        <TextView
+                android:id="@+id/txtnotcount"
+                fontPath="fonts/Avenir.ttc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:alpha="0.7"
+                android:ellipsize="end"
+                android:gravity="end"
+                android:maxLines="1"
+                android:textSize="10dp"
+                android:textAllCaps="true"
+                android:scrollHorizontally="true"
+                android:text="Não possui conta"
+                android:textColor="@android:color/tertiary_text_dark" />
+
+        <TextView
+                android:id="@+id/txtCreateLogin"
+                fontPath="fonts/Avenir.ttc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="left"
+                android:maxLines="1"
+                android:textAllCaps="true"
+                android:textSize="10dp"
+                android:paddingBottom="10dp"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:scrollHorizontally="true"
+                android:text="Cadastre aqui"
+                android:textColor="#555555" />
+    </LinearLayout>
+
+</RelativeLayout>
+
+
