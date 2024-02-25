@@ -112,22 +112,6 @@ class MainActivity : AppCompatActivity() {
             Snackbar.LENGTH_INDEFINITE).setAction(getString(actionStringId), listener).show()
     }
 
-
-    /**
-     * Return the availability of GooglePlayServices
-     */
-//    private fun isGooglePlayServicesAvailable(): Boolean {
-//        val googleApiAvailability = GoogleApiAvailability.getInstance()
-//        val status = googleApiAvailability.isGooglePlayServicesAvailable(this)
-//        if (status != ConnectionResult.SUCCESS) {
-//            if (googleApiAvailability.isUserResolvableError(status)) {
-//                googleApiAvailability.getErrorDialog(this, status, 2404).show()
-//            }
-//            return false
-//        }
-//        return true
-//    }
-
     private fun doLoadRequest(explicityUrl: Boolean) {
         if (!isConnected) {
             Toast.makeText(this, "Falta de Conexão!", Toast.LENGTH_SHORT).show()
@@ -166,8 +150,6 @@ class MainActivity : AppCompatActivity() {
         mWebView!!.webViewClient = CustomWebViewClientv2()
 
         //WebView.setWebContentsDebuggingEnabled(true);
-
-
     }
 
     override fun onPointerCaptureChanged(hasCapture: Boolean) {}
@@ -289,31 +271,6 @@ class MainActivity : AppCompatActivity() {
                 })
 
             biometricPrompt.authenticate(promptInfo)
-        }
-
-        private fun initBiometric() {
-            val biometricManager = BiometricManager.from(this@MainActivity)
-            return when (biometricManager.canAuthenticate()) {
-                BiometricManager.BIOMETRIC_SUCCESS -> {
-//                    promptInfo()
-                }
-                BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
-                    // O dispositivo não possui hardware de autenticação biométrica.
-                }
-                BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
-                    // O hardware de autenticação biométrica não está disponível no momento.
-                }
-                BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
-                    // Não há impressões digitais/faces cadastradas no dispositivo.
-                }
-                BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED -> {
-                }
-                BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED -> {
-                }
-                BiometricManager.BIOMETRIC_STATUS_UNKNOWN -> {
-                }
-                else -> {}
-            }
         }
 
         private fun initBiometricV2(): Boolean {
