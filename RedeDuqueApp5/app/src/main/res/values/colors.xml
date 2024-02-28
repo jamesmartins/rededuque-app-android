@@ -9,6 +9,7 @@
 
 
     <color name="text_secundary_default_color">#121D7B</color>
+    <color name="text_recovery_passwd">#18BC9C</color>
     <color name="text_color_default">#435156</color>
     <color name="underline_color">#E0E0E0</color>
     <color name="text_view_login_color">#055668</color>
