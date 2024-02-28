@@ -26,7 +26,7 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="100dp"
-            android:src="@drawable/logo_intro" />
+            android:src="@drawable/ic_action_name" />
 
     <TextView
             android:id="@+id/txtView"
