@@ -36,7 +36,7 @@ class IntroActivity : AppCompatActivity() {
     fun initViews(){
         var btnLoginMenu = findViewById<View>(id.btnLoginMenu)
         btnLoginMenu.setOnClickListener {
-            startActivity(Intent(applicationContext, LoginActivity::class.java))
+            startActivity(Intent(applicationContext, LoginActivity2::class.java))
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
             finish()
         }
