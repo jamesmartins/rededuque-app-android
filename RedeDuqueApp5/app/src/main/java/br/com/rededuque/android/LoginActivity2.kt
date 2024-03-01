@@ -19,14 +19,23 @@ class LoginActivity2 : AppCompatActivity() {
         setContentView(R.layout.activity_login2)
 
         initViews()
+
+        btnLogin!!.setOnClickListener {
+            var login = editLogin!!.text.toString().trim()
+            var passwd = editPasswd!!.text.toString().trim()
+            if (login.length > 11 || login.length < 11 )
+
+                return
+
+        }
     }
 
     fun initViews(){
         var btnManterDadosLogin = findViewById<SwitchMaterial>(R.id.txtCheckLogin)
         btnManterDadosLogin.isChecked = true
-        editLogin = findViewById<TextInputEditText>(R.id.edtLogin)
-        editPasswd = findViewById<TextInputEditText>(R.id.edtPasssword)
-
+        editLogin = findViewById(R.id.edtLogin)
+        editPasswd = findViewById(R.id.edtPasssword)
+        btnLogin = findViewById(R.id.btnLogin)
     }
 
     override fun onBackPressed() {
