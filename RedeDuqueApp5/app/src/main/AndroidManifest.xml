@@ -31,7 +31,7 @@
                 android:exported="false"
                 android:screenOrientation="portrait"
                 android:label="Faça seu login"
-                android:theme="@style/AppThemeBar"/>
+                android:theme="@style/AppThemeMaterialBar"/>
 
         <activity
                 android:name=".SplashActivity"
