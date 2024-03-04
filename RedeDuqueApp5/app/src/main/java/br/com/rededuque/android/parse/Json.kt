@@ -42,6 +42,20 @@ object Json {
         }
     }
 
+    fun getAuthUser(userCPF : String, passwd: String ): String{
+        try {
+            var json = JSONStringer()
+                .`object`()
+                .key("CPF").value(userCPF)
+                .key("SENHA").value(passwd)
+                .endObject()
+                .toString()
+            return json
+        } catch (e: JSONException) {
+            throw RuntimeException(e)
+        }
+    }
+
     fun getUserOneSignalData(user : User ): String{
         try {
             var json = JSONStringer()
