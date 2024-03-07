@@ -4,7 +4,7 @@ import org.json.JSONObject
 
 class UserAuthData(
     var cod_cliente: String? = null,
-    var auth: String? = null,
+    var auth: Boolean = false,
     var key: String? = null,
     var idU: String? = null,
     var idL: String? = null,

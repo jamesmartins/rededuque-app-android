@@ -27,11 +27,7 @@ class IntroActivity : AppCompatActivity() {
 
         // Load Views
         initViews()
-
-        // Load Url
-//        doLoadConfig(ACCESSEDSTATICURL)
     }
-
 
     fun initViews(){
         var btnLoginMenu = findViewById<View>(id.btnLoginMenu)
@@ -42,11 +38,4 @@ class IntroActivity : AppCompatActivity() {
         }
     }
 
-    fun doLoadConfig() {
-
-    }
-
-    private fun loadConfigFromRedeDuque(url: String,companyId: Int = PROJECT_ID, completion: (success: Boolean, configApp: ConfigApp?) -> Unit) {
-
-    }
 }

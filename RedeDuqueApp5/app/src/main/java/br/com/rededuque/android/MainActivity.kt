@@ -32,7 +32,6 @@ import com.onesignal.OneSignal
 import okhttp3.Call
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import org.json.JSONObject
 import java.io.IOException
 import java.util.concurrent.Executor
@@ -47,8 +46,6 @@ import javax.security.auth.callback.Callback
  * URL DEFAULT: https://adm.bunkerapp.com.br/app/intro.do?key=sgXRkwFYRfk¢
  * FEATURES: user data saved by url handle, recognize by Biometrec methods on login authenticating
  */
-
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -189,7 +186,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         private fun processRedeDuqueUrlKey(keyValue : String, companyId: Int = PROJECT_ID, completion: (success: Boolean, user: User?) -> Unit) {
-            val postparams = Json.getLoggedUser(keyValue.toBase64(), companyId)
+            val postparams = Json.getRDLoggedUser(keyValue.toBase64(), companyId)
 
             HttpClient.getInstance.postAsync(mUrlUserSearchKeyData, postparams, object : Callback, okhttp3.Callback {
 
@@ -205,7 +202,7 @@ class MainActivity : AppCompatActivity() {
                         if (userResult.isNotEmpty() && userResult.isNotBlank()){
                             val obj = JSONObject(userResult)
                             if (obj.has("RD_userId")) {
-                                var userLogged = Json.toUser(userResult)
+                                var userLogged = Json.toRDUser(userResult)
                                 completion(true, userLogged)
                             } else {
                                 completion(false, User())

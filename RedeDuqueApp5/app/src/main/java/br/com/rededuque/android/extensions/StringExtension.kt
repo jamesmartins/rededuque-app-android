@@ -21,6 +21,23 @@ import kotlin.collections.ArrayList
  */
 
 
+fun String.isCpf(): Boolean {
+    return this.length == 14 && !this.all { it == this[0] } &&
+            !"00000000001".equals(this) && !"11111111111".equals(this) &&
+            !"22222222222".equals(this) && !"33333333333".equals(this) &&
+            !"44444444444".equals(this) && !"55555555555".equals(this) &&
+            !"66666666666".equals(this) && !"77777777777".equals(this) &&
+            !"88888888888".equals(this) && !"99999999999".equals(this) &&
+            calculateDv(this.substring(0, 9)) == this[12].toString().toInt() &&
+            calculateDv(this.substring(0, 10) + this[12]) == this[13].toString().toInt()
+}
+
+private fun calculateDv(cpf: String): Int {
+    val sum = cpf.mapIndexed { index, c -> (c.toString().toInt() * (11 - index)) }
+        .sum()
+    return if (sum % 11 < 2) 0 else 11 - sum % 11
+}
+
 fun String.safelyLimitedTo(len: Int): String {
     if (this.count() <= len) return this
     return substring(0, len)

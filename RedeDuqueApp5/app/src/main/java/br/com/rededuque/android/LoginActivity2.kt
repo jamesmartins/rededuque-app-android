@@ -2,26 +2,26 @@ package br.com.rededuque.android
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.LiveData
 import br.com.rededuque.android.extensions.isValidCPF
 import br.com.rededuque.android.extensions.toBase64
 import br.com.rededuque.android.extensions.toast
 import br.com.rededuque.android.model.User
+import br.com.rededuque.android.model.UserAuthData
 import br.com.rededuque.android.parse.Json
 import br.com.rededuque.android.services.HttpClient
 import br.com.rededuque.android.utils.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.switchmaterial.SwitchMaterial
-import com.google.android.material.textfield.TextInputEditText
+import com.onesignal.OneSignal
 import okhttp3.Call
 import org.json.JSONObject
 import java.io.IOException
@@ -31,8 +31,8 @@ class LoginActivity2 : AppCompatActivity() {
 
     private val TAG = LoginActivity2::class.java.simpleName
     var btnLogin: Button? = null
-    var editLogin: TextInputEditText? = null
-    var editPasswd: TextInputEditText? = null
+    var editLogin: AppCompatEditText? = null
+    var editPasswd: AppCompatEditText? = null
     private var progressBar: ProgressBar? = null
     private var isConnected = false
 
@@ -75,7 +75,7 @@ class LoginActivity2 : AppCompatActivity() {
             return
         }
 
-        if (login.isValidCPF()) {
+        if (!login.isValidCPF()) {
             toast("CPF inválido!!")
             return
         }
@@ -88,30 +88,84 @@ class LoginActivity2 : AppCompatActivity() {
         }
 
         //Do authenticate
-        doAuthenticate(user, passwd, completion = {
+        var userAuthLogged: UserAuthData? = null
+        var userRD: User? = null
+        doAuthenticate(user, passwd,  completion = { success: Boolean, user: UserAuthData? ->
+            if (success){
+                userAuthLogged = user
 
+                // Get RedeDuque Login User token data
+                var IDLkey = userAuthLogged!!.idL
+                if (!IDLkey.isNullOrBlank()){
+                    //Save Auth Token Cookies
+                    saveAuthIDLToken(IDLkey)
+                }
+
+                // Get RedeDuque Personal User Logged data
+                var IDUkey = userAuthLogged!!.idU
+                // Verifying on Rede Duque base if exist on RD and OneSignal
+                if (!IDUkey.isNullOrBlank()) {
+                    processRedeDuqueUrlKey(IDUkey!!, completion = { success: Boolean, user: User? ->
+                        if (success) {
+                            userRD = user!!
+
+                            // Get OneSignal data
+                            var deviceState = OneSignal.getDeviceState()
+                            deviceState.let {
+                                userRD!!.RD_TokenCelular = deviceState?.pushToken
+                                userRD!!.RD_User_Player_Id = deviceState?.userId
+                            }
+
+                            //Get Authentication Cookies Data
+                            val emailCookie = userRD!!.RD_userMail
+                            val passwdCookie = userRD!!.RD_userpass
+
+                            //Save Auth Cookies
+                            saveAuthCookies(emailCookie, passwdCookie)
+
+                            //Send OenSignal Data to RedeDuque
+                            sendOneSignalDataToRedeDuque(userRD!!, completion = {
+                                if (it) Log.d(
+                                    getString(R.string.Data_Sent_to_RedeDuque),
+                                    "Dados OneSignal Enviados para Rede Duque!"
+                                )
+                            })
+                        }
+                    })
+                }
+            }
         })
     }
 
-    private fun doAuthenticate(user: String, passwd: String, completion: (success: Boolean) -> Unit) {
+    private fun doAuthenticate(user: String, passwd: String, completion: (success: Boolean, user: UserAuthData?) -> Unit) {
         val postparams = Json.getAuthUser(user, passwd)
 
-        HttpClient.getInstance.postAsync(mUrlAuthApp, postparams, object : Callback, okhttp3.Callback {
+        HttpClient.getInstance.postAsync3(mUrlAuthApp, postparams, object : Callback, okhttp3.Callback {
 
             override fun onFailure(call: Call, e: IOException) {
-                completion(false)
+                completion(false, null)
                 Log.d(this::class.simpleName, "Error Comunication")
             }
 
             override fun onResponse(call: Call, response: okhttp3.Response) {
                 if (response.isSuccessful && response.code == 200) {
-                    //get data user from idU Key
-                    Log.d(getString(R.string.Success_To_Login),"Login Realizado com Sucesso...")
-                    completion(true)
-
-                } else {
-                    completion(false)
-                    Log.d(getString(R.string.Error_To_Login),"Aconteceu algum problema no Login...")
+                    //get data user
+                    var userData = response.peekBody(2048).string()
+                    if (userData.isNotEmpty() && userData.isNotBlank()){
+                        val obj = JSONObject(userData)
+                        if (obj.has("cod_cliente")) {
+                            var userLogged = Json.toAuthUser(userData)
+                            //get data user from idU Key
+                            Log.d(getString(R.string.Success_To_Login),"Login Realizado com Sucesso...")
+                            completion(true, userLogged)
+                        } else {
+                            completion(false, UserAuthData())
+                            Log.d("Error_Message","Aconteceu algum problema de dados da RedeDuque...")
+                        }
+                    } else {
+                        completion(false, null)
+                        Log.d(getString(R.string.Error_To_Login),"Aconteceu algum problema no Login...")
+                    }
                 }
             }
         })
@@ -148,7 +202,7 @@ class LoginActivity2 : AppCompatActivity() {
     }
 
     private fun processRedeDuqueUrlKey(keyValue : String, companyId: Int = PROJECT_ID, completion: (success: Boolean, user: User?) -> Unit) {
-        val postparams = Json.getLoggedUser(keyValue.toBase64(), companyId)
+        val postparams = Json.getRDLoggedUser(keyValue.toBase64(), companyId)
 
         HttpClient.getInstance.postAsync(mUrlUserSearchKeyData, postparams, object : Callback, okhttp3.Callback {
 
@@ -164,7 +218,7 @@ class LoginActivity2 : AppCompatActivity() {
                     if (userResult.isNotEmpty() && userResult.isNotBlank()){
                         val obj = JSONObject(userResult)
                         if (obj.has("RD_userId")) {
-                            var userLogged = Json.toUser(userResult)
+                            var userLogged = Json.toRDUser(userResult)
                             completion(true, userLogged)
                         } else {
                             completion(false, User())

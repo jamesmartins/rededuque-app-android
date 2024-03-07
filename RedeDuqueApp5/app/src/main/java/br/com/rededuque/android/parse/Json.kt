@@ -3,13 +3,14 @@ package br.com.rededuque.android.parse
 
 import br.com.rededuque.android.model.UrlServer
 import br.com.rededuque.android.model.User
+import br.com.rededuque.android.model.UserAuthData
 import br.com.rededuque.android.utils.PROJECT_ID
 import org.json.JSONException
 import org.json.JSONObject
 import org.json.JSONStringer
 
 object Json {
-    fun toUser(json: String): User {
+    fun toRDUser(json: String): User {
         try {
             val obj = JSONObject(json)
             val user = User()
@@ -28,7 +29,7 @@ object Json {
         }
     }
 
-    fun getLoggedUser(RD_userId : String, RD_userCompany: Int ): String{
+    fun getRDLoggedUser(RD_userId : String, RD_userCompany: Int ): String{
         try {
             var json = JSONStringer()
                 .`object`()
@@ -56,6 +57,22 @@ object Json {
         }
     }
 
+    fun toAuthUser(json: String): UserAuthData {
+        try {
+            val obj = JSONObject(json)
+            val user = UserAuthData()
+            user.cod_cliente = obj.getString("cod_cliente")
+            user.auth = obj.getBoolean("auth")
+            user.key = obj.getString("key")
+            user.idU = obj.getString("idU")
+            user.idL = obj.getString("idL")
+            user.entidade = obj.getString("entidade")
+            return user
+        } catch (e: JSONException) {
+            throw RuntimeException(e)
+        }
+    }
+
     fun getUserOneSignalData(user : User ): String{
         try {
             var json = JSONStringer()
@@ -71,22 +88,6 @@ object Json {
                 .endObject()
                 .toString()
             return json
-        } catch (e: JSONException) {
-            throw RuntimeException(e)
-        }
-    }
-
-    fun toLoggedUser(json: String): User {
-        try {
-            val obj = JSONObject(json)
-            val user = User()
-            user.RD_userId = obj.getString("RD_userId")
-            user.RD_userCompany = obj.getString("RD_userCompany")
-            user.RD_userMail = obj.getString("RD_userMail")
-            user.RD_userName = obj.getString("RD_userName")
-            user.RD_userType = obj.getString("RD_userpass")
-            user.jsonObject = obj
-            return user
         } catch (e: JSONException) {
             throw RuntimeException(e)
         }
