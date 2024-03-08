@@ -29,6 +29,9 @@ val mUrlDecriptService = "https://adm.bunker.mk/wsjson/CookieDec.do"
 const val mUrlUserSearchKeyData = "https://adm.bunker.mk/wsjson/ConsultaCli.do"
 const val mUrlUserPushDataInformation = "https://adm.bunker.mk/wsjson/TokenAppPush.do"
 
+
+const val mUrl_NOVO_MENU = "https://adm.bunkerapp.com.br/app/novoMenu.do"
+
 const val FIRST_LOGIN_DONE = "FIRST_LOGIN_DONE"
 const val VERIFY_KEY_CUSTOMER = "VERIFY_KEY_CUSTOMER"
 const val PROJECT_ID = 19  // ID NUMBER REDE DUQUE PROJECT

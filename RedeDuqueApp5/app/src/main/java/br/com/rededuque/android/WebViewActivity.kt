@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -12,7 +13,10 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
+import android.widget.Toast
 import br.com.rededuque.android.model.User
+import br.com.rededuque.android.utils.Utils
+import br.com.rededuque.android.utils.mUrlStatic
 
 
 class WebViewActivity : AppCompatActivity() {
@@ -24,6 +28,23 @@ class WebViewActivity : AppCompatActivity() {
         setContentView(R.layout.activity_webview)
 
         initViews()
+
+        var mUrlLoading = intent.extras!!.getString("URL_LOAD_CONTENT")
+        loadContent(mUrlLoading!!)
+    }
+
+    private fun loadContent(url: String) {
+        val isConnected = Utils.isNetworkConnected(applicationContext)
+        if (mWebView != null) {
+            if (isConnected) {
+                if (url != "")
+                    mWebView!!.loadUrl(url.trim { it <= ' ' })
+                else
+                    Toast.makeText(applicationContext, "Erro no carregamento da página!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(applicationContext, "Sem Conexão!", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun initViews() {
@@ -32,9 +53,13 @@ class WebViewActivity : AppCompatActivity() {
         mWebView!!.settings.javaScriptEnabled = true
         mWebView!!.settings.cacheMode = WebSettings.LOAD_NO_CACHE
         mWebView!!.settings.loadsImagesAutomatically = true
-        mWebView!!.settings.loadWithOverviewMode = true
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR_MR1) {
+            mWebView!!.settings.loadWithOverviewMode = true
+        }
         mWebView!!.settings.useWideViewPort = true
-        mWebView!!.settings.builtInZoomControls = false
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CUPCAKE) {
+            mWebView!!.settings.builtInZoomControls = false
+        }
         mWebView!!.webChromeClient = WebChromeClient()
         mWebView!!.webViewClient = CustomWebViewClientv2()
 
