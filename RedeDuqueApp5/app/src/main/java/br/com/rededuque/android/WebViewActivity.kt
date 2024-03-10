@@ -16,7 +16,6 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import br.com.rededuque.android.model.User
 import br.com.rededuque.android.utils.Utils
-import br.com.rededuque.android.utils.mUrlStatic
 
 
 class WebViewActivity : AppCompatActivity() {

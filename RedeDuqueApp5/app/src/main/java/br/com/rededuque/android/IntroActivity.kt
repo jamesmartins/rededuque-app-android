@@ -1,15 +1,12 @@
 package br.com.rededuque.android
 
+import android.R
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import br.com.rededuque.android.R.id
-import br.com.rededuque.android.extensions.toast
-import br.com.rededuque.android.model.ConfigApp
-import br.com.rededuque.android.utils.PROJECT_ID
 import br.com.rededuque.android.utils.Utils
 
 
@@ -31,6 +28,9 @@ class IntroActivity : AppCompatActivity() {
 
     fun initViews(){
         var btnLoginMenu = findViewById<View>(id.btnLoginMenu)
+        val txtCadastro = findViewById<TextView>(R.id.txtCadastro)
+        val txtFaleConosco = findViewById<TextView>(R.id.txtFaleConosco)
+        val txtParceiro = findViewById<TextView>(R.id.txtParceiro)
         btnLoginMenu.setOnClickListener {
             startActivity(Intent(applicationContext, LoginActivity2::class.java))
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)

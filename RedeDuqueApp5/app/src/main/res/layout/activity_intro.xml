@@ -5,7 +5,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#1f398d"
-        tools:context=".WebViewActivity">
+        tools:context=".IntroActivity">
 
     <ImageView
             android:id="@+id/imageView"
@@ -38,49 +38,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
-<!--    <Button-->
-<!--            android:id="@+id/btnLoginMenu"-->
-<!--            android:text="LOGIN"-->
-<!--            android:textStyle="bold"-->
-<!--            android:textSize="16sp"-->
-<!--            android:fontFamily="sans-serif-black"-->
-<!--            android:textColor="@android:color/white"-->
-<!--            android:backgroundTint="#1f398d"-->
-<!--            android:elevation="60dp"-->
-<!--            android:padding="10dp"-->
-<!--            android:background="@drawable/btn_login_style"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_marginTop="32dp"-->
-<!--            android:layout_marginStart="15dp"-->
-<!--            android:layout_marginEnd="15dp"-->
-<!--            android:layout_height="50dp"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/imageView" />-->
-
-<!--    <TextView-->
-<!--            android:id="@+id/btnLoginMenu"-->
-<!--            android:text="LOGIN"-->
-<!--            android:textStyle="bold"-->
-<!--            android:textSize="16sp"-->
-<!--            android:gravity="center"-->
-<!--            android:fontFamily="sans-serif-black"-->
-<!--            android:textColor="@android:color/white"-->
-<!--            android:elevation="60dp"-->
-<!--            android:padding="10dp"-->
-<!--            android:clipToPadding="false"-->
-<!--            android:background="@drawable/btn_login_style"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_marginTop="32dp"-->
-<!--            android:layout_marginStart="15dp"-->
-<!--            android:layout_marginEnd="15dp"-->
-<!--            android:layout_height="50dp"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/imageView" />-->
-
     <TextView
-            android:id="@+id/textview1"
+            android:id="@+id/txtCadastro"
             android:text="CADASTRA-SE"
             android:textStyle="bold"
             android:textSize="16sp"
@@ -94,7 +53,7 @@
             android:layout_marginTop="30dp"/>
 
     <TextView
-            android:id="@+id/textview2"
+            android:id="@+id/txtFaleConosco"
             android:text="FALE CONOSCO"
             android:textStyle="bold"
             android:textSize="16sp"
@@ -102,13 +61,13 @@
             android:textColor="@android:color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/textview1"
+            app:layout_constraintTop_toBottomOf="@+id/txtCadastro"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="30dp"/>
 
     <TextView
-            android:id="@+id/textview3"
+            android:id="@+id/txtParceiro"
             android:text="SEJA NOSSO PARCEIRO"
             android:textStyle="bold"
             android:textSize="16sp"
@@ -116,7 +75,7 @@
             android:textColor="@android:color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/textview2"
+            app:layout_constraintTop_toBottomOf="@+id/txtFaleConosco"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="30dp"/>

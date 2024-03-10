@@ -129,7 +129,7 @@ class LoginActivity2 : AppCompatActivity() {
                                 if (it) {
                                     Log.d(getString(R.string.Data_Sent_to_RedeDuque), "Dados OneSignal Enviados para Rede Duque!")
                                     //https://adm.bunkerapp.com.br/app/novoMenu.do?key=sgXRkwFYRfk%C2%A2&idU=rZXlEkgp%C2%A3fYJC6detoQ5WuA%C2%A2%C2%A2&log=1&t=ovWplTx4ipZUQbMjoNDrhbViTs%C2%A3im8wdw&idL=clpYbEVrZ3DCo2ZZSkM2ZGV0b1E1V3VBwqLConxsVjRJSWN3SFlJa8Ki
-                                    var mUrl = mUrl_NOVO_MENU + "?" + userAuthLogged!!.key + "&" + userAuthLogged!!.idU + "log=1"
+                                    var mUrl = mUrl_NOVO_MENU + "?key=" + userAuthLogged!!.key  + "&idU=" + userAuthLogged!!.idU + "&cds=0"
                                     startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
                                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                                 }
