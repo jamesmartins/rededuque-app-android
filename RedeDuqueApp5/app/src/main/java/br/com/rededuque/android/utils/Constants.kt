@@ -34,7 +34,7 @@ const val mUrlRecuperacaoSenha = "recuperacaoSenha.do?key=sgXRkwFYRfk¢&t=CxWc6B
 // parceiro
 const val mUrlParceiro = "parceiro.do?key=c2dYUmt3RllSZmvCog==&t=SzwrGPtfs£s£UXRLKgEsQ6mDRkKtMIiTcG"
 // fale cosnoco
-const val mUrlConosco = "faleConosco.do?key=c2dYUmt3RllSZmvCog==&t=SzwrGPtfs£s£UXRLKgEsQ6mDRkKtMIiTcG"
+const val mUrlFaleConosco = "faleConosco.do?key=c2dYUmt3RllSZmvCog==&t=SzwrGPtfs£s£UXRLKgEsQ6mDRkKtMIiTcG"
 // novoMenu (navigation view)
 const val mUrl_NOVO_MENU = "https://adm.bunkerapp.com.br/app/novoMenu.do"
 

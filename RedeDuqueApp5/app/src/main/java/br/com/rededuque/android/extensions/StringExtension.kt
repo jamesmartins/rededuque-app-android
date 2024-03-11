@@ -19,7 +19,10 @@ import kotlin.collections.ArrayList
 /**
  * Created by james.martins on 17/01/18.
  */
-
+fun String.mascaraCPF(): String {
+    val regex = Regex("(\\d{3})(\\d{3})(\\d{3})")
+    return regex.replace(this, "$1.$2.$3")
+}
 
 fun String.isCpf(): Boolean {
     return this.length == 14 && !this.all { it == this[0] } &&

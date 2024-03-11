@@ -14,30 +14,33 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             android:usesCleartextTraffic="true">
+
         <activity
-                android:name=".IntroActivity"
+                android:name=".IntroActivity2"
                 android:exported="false"
                 android:screenOrientation="portrait"
-                android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"/>
+                android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
+
         <activity
                 android:name=".WebViewActivity"
                 android:exported="false"
-                android:screenOrientation="portrait"
                 android:label="Faça seu login"
-                android:theme="@style/AppThemeBar"/>
+                android:screenOrientation="portrait"
+                android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
 
         <activity
                 android:name=".LoginActivity2"
                 android:exported="false"
-                android:screenOrientation="portrait"
                 android:label="Faça seu login"
-                android:theme="@style/AppThemeMaterialBar"/>
+                android:screenOrientation="portrait"
+                android:theme="@style/AppThemeMaterialBar" />
 
         <activity
                 android:name=".SplashActivity"
                 android:exported="true"
                 android:screenOrientation="portrait"
                 android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

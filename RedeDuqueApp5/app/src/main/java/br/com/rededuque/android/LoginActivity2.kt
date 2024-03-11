@@ -1,18 +1,25 @@
 package br.com.rededuque.android
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import br.com.rededuque.android.extensions.isValidCPF
+import br.com.rededuque.android.extensions.mascaraCPF
 import br.com.rededuque.android.extensions.toBase64
 import br.com.rededuque.android.extensions.toast
 import br.com.rededuque.android.model.User
@@ -28,12 +35,14 @@ import org.json.JSONObject
 import java.io.IOException
 import javax.security.auth.callback.Callback
 
-class LoginActivity2 : AppCompatActivity() {
+class LoginActivity2 : AppCompatActivity(), TextWatcher {
 
     private val TAG = LoginActivity2::class.java.simpleName
     var btnLogin: Button? = null
     var editLogin: AppCompatEditText? = null
     var editPasswd: AppCompatEditText? = null
+    var txtRememberPassword: TextView? = null
+    var txtCreateLogin: TextView? = null
     private var progressBar: ProgressBar? = null
     private var isConnected = false
 
@@ -57,12 +66,30 @@ class LoginActivity2 : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        readFromAuthCookies()
+    }
+
     fun initViews(){
         var btnManterDadosLogin = findViewById<SwitchMaterial>(R.id.txtCheckLogin)
         btnManterDadosLogin.isChecked = true
         editLogin = findViewById(R.id.edtLogin)
+        editLogin!!.addTextChangedListener(this)
         editPasswd = findViewById(R.id.edtPasssword)
         btnLogin = findViewById(R.id.btnLogin)
+        txtRememberPassword = findViewById(R.id.txtRememberPassword)
+        txtRememberPassword!!.setOnClickListener {
+            var mUrl = baseURL + mUrlRecuperacaoSenha
+            startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+        }
+        txtCreateLogin = findViewById(R.id.txtCreateLogin)
+        txtCreateLogin!!.setOnClickListener {
+            var mUrl = baseURL + mUrlCadastro
+            startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+        }
     }
 
     private fun validate(login : String, passwd: String){
@@ -87,6 +114,9 @@ class LoginActivity2 : AppCompatActivity() {
             toast("Falta de Conexão!", Toast.LENGTH_SHORT)
             return
         }
+
+        // saving CPF data
+        saveDataCPF(user)
 
         //Do authenticate
         var userAuthLogged: UserAuthData? = null
@@ -128,7 +158,6 @@ class LoginActivity2 : AppCompatActivity() {
                             sendOneSignalDataToRedeDuque(userRD!!, completion = {
                                 if (it) {
                                     Log.d(getString(R.string.Data_Sent_to_RedeDuque), "Dados OneSignal Enviados para Rede Duque!")
-                                    //https://adm.bunkerapp.com.br/app/novoMenu.do?key=sgXRkwFYRfk%C2%A2&idU=rZXlEkgp%C2%A3fYJC6detoQ5WuA%C2%A2%C2%A2&log=1&t=ovWplTx4ipZUQbMjoNDrhbViTs%C2%A3im8wdw&idL=clpYbEVrZ3DCo2ZZSkM2ZGV0b1E1V3VBwqLConxsVjRJSWN3SFlJa8Ki
                                     var mUrl = mUrl_NOVO_MENU + "?key=" + userAuthLogged!!.key  + "&idU=" + userAuthLogged!!.idU + "&cds=0"
                                     startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
                                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
@@ -197,6 +226,19 @@ class LoginActivity2 : AppCompatActivity() {
             Utils.saveToPreference(applicationContext, "emailSAVED", login.trim { it <= ' ' })
             Utils.saveToPreference(applicationContext, "passwdSAVED", passwd.trim { it <= ' ' })
         }
+    }
+
+    private fun saveDataCPF(CPF: String?) {
+        if (CPF != null) {
+            Utils.saveToPreference(applicationContext, "cpfSAVED", CPF.trim { it <= ' ' })
+        }
+    }
+
+    private fun readFromAuthCookies() {
+        var loginCPF = Utils.readFromPreferences(applicationContext, "cpfSAVED"," ")
+        editLogin!!.setText(loginCPF!!)
+        var loginPasswd = Utils.readFromPreferences(applicationContext, "passwdSAVED"," ")
+        editPasswd!!.setText(loginPasswd!!, TextView.BufferType.EDITABLE)
     }
 
     private fun saveAuthIDLToken(idlToken: String?) {
@@ -301,6 +343,41 @@ class LoginActivity2 : AppCompatActivity() {
             0 -> true
             else -> false
         }
+    }
+
+    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+    override fun afterTextChanged(p0: Editable?) {
+
+    }
+
+    private fun applyMask(text: String): String {
+        val formattedText = StringBuilder()
+        val cpfLength = 11
+
+        for (i in text.indices) {
+            if (i < cpfLength) {
+                formattedText.append(text[i])
+                if (i == 2 || i == 5) {
+                    formattedText.append(".")
+                } else if (i == 8) {
+                    formattedText.append("-")
+                }
+            } else {
+                formattedText.append(text[i])
+                if (i == 1 || i == 4) {
+                    formattedText.append(".")
+                } else if (i == 7) {
+                    formattedText.append("/")
+                } else if (i == 11) {
+                    formattedText.append("-")
+                }
+            }
+        }
+
+        return formattedText.toString()
     }
 
 }
