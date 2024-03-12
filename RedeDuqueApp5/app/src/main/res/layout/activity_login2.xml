@@ -100,7 +100,7 @@
             android:layout_below="@+id/txtCheckLogin"
             android:layout_marginLeft="45dp"
             android:layout_marginRight="45dp"
-            android:background="@drawable/btn_entrar"
+            android:background="@drawable/btn_login_entrar"
             android:backgroundTint="@color/colorPrimary"
             android:text="Entrar"
             android:layout_marginTop="30dp"

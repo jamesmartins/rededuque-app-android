@@ -57,7 +57,7 @@ fun String.onlyNumbers(): String {
 }
 
 fun String.onlyNumbers2(): String {
-    val result = this.replace("[^-?0-9]+".toRegex(), " ").replace(" ", "" )
+    val result = this.replace("[^-?0-9]+".toRegex(), " ").replace(" ", "" ).replace("-","")
     return result.trim()
 }
 

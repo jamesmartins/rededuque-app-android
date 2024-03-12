@@ -20,6 +20,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import br.com.rededuque.android.extensions.isValidCPF
 import br.com.rededuque.android.extensions.mascaraCPF
+import br.com.rededuque.android.extensions.onlyNumbers
+import br.com.rededuque.android.extensions.onlyNumbers2
 import br.com.rededuque.android.extensions.toBase64
 import br.com.rededuque.android.extensions.toast
 import br.com.rededuque.android.model.User
@@ -43,6 +45,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
     var editPasswd: AppCompatEditText? = null
     var txtRememberPassword: TextView? = null
     var txtCreateLogin: TextView? = null
+    var txtCheckLogin: SwitchMaterial? = null
     private var progressBar: ProgressBar? = null
     private var isConnected = false
 
@@ -55,7 +58,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         initViews()
 
         btnLogin!!.setOnClickListener {
-            var login = editLogin!!.text.toString().trim()
+            var login = editLogin!!.text.toString().onlyNumbers2()
             var passwd = editPasswd!!.text.toString().trim()
 
             // validate
@@ -79,12 +82,17 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         editPasswd = findViewById(R.id.edtPasssword)
         btnLogin = findViewById(R.id.btnLogin)
         txtRememberPassword = findViewById(R.id.txtRememberPassword)
+        txtCreateLogin = findViewById(R.id.txtCreateLogin)
+        txtCheckLogin = findViewById(R.id.txtCheckLogin)
+
+
+        //actions
         txtRememberPassword!!.setOnClickListener {
             var mUrl = baseURL + mUrlRecuperacaoSenha
             startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
         }
-        txtCreateLogin = findViewById(R.id.txtCreateLogin)
+
         txtCreateLogin!!.setOnClickListener {
             var mUrl = baseURL + mUrlCadastro
             startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
@@ -116,7 +124,10 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         }
 
         // saving CPF data
-        saveDataCPF(user)
+        if (txtCheckLogin!!.isChecked){
+            saveDataCPF(user)
+        }
+
 
         //Do authenticate
         var userAuthLogged: UserAuthData? = null
@@ -236,6 +247,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
 
     private fun readFromAuthCookies() {
         var loginCPF = Utils.readFromPreferences(applicationContext, "cpfSAVED"," ")
+        loginCPF = applyMask(loginCPF!!)
         editLogin!!.setText(loginCPF!!)
         var loginPasswd = Utils.readFromPreferences(applicationContext, "passwdSAVED"," ")
         editPasswd!!.setText(loginPasswd!!, TextView.BufferType.EDITABLE)
@@ -349,7 +361,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
 
     override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
-    override fun afterTextChanged(p0: Editable?) {
+    override fun afterTextChanged(txt: Editable?) {
 
     }
 
