@@ -145,8 +145,8 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         }
 
         //Do authenticate
-        var userAuthLogged: UserAuthData? = null
-        var userRD: User? = null
+        var userAuthLogged: UserAuthData?
+        var userRD: User?
         doAuthenticate(user, passwd,  completion = { success: Boolean, user: UserAuthData? ->
             if (success){
                 userAuthLogged = user
@@ -162,7 +162,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                 var IDUkey = userAuthLogged!!.idU
                 // Verifying on Rede Duque base if exist on RD and OneSignal
                 if (!IDUkey.isNullOrBlank()) {
-                    processRedeDuqueUrlKey(IDUkey!!, completion = { success: Boolean, user: User? ->
+                    processRedeDuqueUrlKey(IDUkey, completion = { success: Boolean, user: User? ->
                         if (success) {
                             userRD = user!!
 
@@ -285,7 +285,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
     private fun readFromAuthCookies() {
         var loginCPF = Utils.readFromPreferences(applicationContext, "cpfSAVED"," ")
         loginCPF = applyMask(loginCPF!!)
-        editLogin!!.setText(loginCPF!!)
+        editLogin!!.setText(loginCPF)
         var loginPasswd = Utils.readFromPreferences(applicationContext, "passwdSAVED"," ")
         editPasswd!!.setText(loginPasswd!!, TextView.BufferType.EDITABLE)
     }
