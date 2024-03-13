@@ -1,12 +1,10 @@
 package br.com.rededuque.android
 
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -17,9 +15,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
 import br.com.rededuque.android.extensions.isValidCPF
-import br.com.rededuque.android.extensions.mascaraCPF
 import br.com.rededuque.android.extensions.onlyNumbers
 import br.com.rededuque.android.extensions.onlyNumbers2
 import br.com.rededuque.android.extensions.toBase64
@@ -60,12 +56,32 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         btnLogin!!.setOnClickListener {
             var login = editLogin!!.text.toString().onlyNumbers2()
             var passwd = editPasswd!!.text.toString().trim()
-
             // validate
             validate(login, passwd)
-
             //Do login
             doLogin(login, passwd)
+        }
+
+        verifyUserSavedPass()
+    }
+
+    private fun verifyUserSavedPass(){
+        if (hasDataUserSaved() && hasIduPassDataSaved()!!){
+            // Biometric request
+            if (initBiometricV2()){
+                promptInfo(completion = {
+                    if (it){
+                        var userIDUUrlpass = Utils.readFromPreferences(applicationContext, "userIDUPassSaved", " ")
+                        if (userIDUUrlpass != null){
+                            // open activity with webview + url authenticated user pass
+                            startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", userIDUUrlpass.trim()))
+                            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                        } else {
+                            toast("Digite novamente seus dados do login!")
+                        }
+                    }
+                })
+            }
         }
     }
 
@@ -125,9 +141,8 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
 
         // saving CPF data
         if (txtCheckLogin!!.isChecked){
-            saveDataCPF(user)
+            saveDataUser(user, passwd)
         }
-
 
         //Do authenticate
         var userAuthLogged: UserAuthData? = null
@@ -170,6 +185,11 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                                 if (it) {
                                     Log.d(getString(R.string.Data_Sent_to_RedeDuque), "Dados OneSignal Enviados para Rede Duque!")
                                     var mUrl = mUrl_NOVO_MENU + "?key=" + userAuthLogged!!.key  + "&idU=" + userAuthLogged!!.idU + "&cds=0"
+
+                                    // save url authenticated user pass
+                                    saveIduPassData(mUrl, true)
+
+                                    // open activity with webview + url authenticated user pass
                                     startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
                                     overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                                 }
@@ -239,11 +259,28 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         }
     }
 
-    private fun saveDataCPF(CPF: String?) {
-        if (CPF != null) {
+    private fun saveDataUser(CPF: String?, passwd : String?) {
+        if (CPF != null && passwd != null) {
             Utils.saveToPreference(applicationContext, "cpfSAVED", CPF.trim { it <= ' ' })
+            Utils.saveToPreference(applicationContext, "passwdSAVED", passwd.trim { it <= ' ' })
+            Utils.saveToPreference(applicationContext, "loggedDataSAVED", true)
         }
     }
+
+    private fun hasDataUserSaved():Boolean{
+        var loggedDataUser = Utils.readFromPreferences(applicationContext, "loggedDataSAVED",false)
+        return loggedDataUser!!
+    }
+
+    private fun saveIduPassData(dataPath : String?, status : Boolean?){
+        if (dataPath != null && status != null) {
+            Utils.saveToPreference(applicationContext, "userIDUPassSaved", dataPath)
+            Utils.saveToPreference(applicationContext, "userHasIDUPass", true)
+        }
+    }
+
+    private fun hasIduPassDataSaved(): Boolean? =
+          Utils.readFromPreferences(applicationContext, "userHasIDUPass",false)
 
     private fun readFromAuthCookies() {
         var loginCPF = Utils.readFromPreferences(applicationContext, "cpfSAVED"," ")
