@@ -283,11 +283,13 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
           Utils.readFromPreferences(applicationContext, "userHasIDUPass",false)
 
     private fun readFromAuthCookies() {
-        var loginCPF = Utils.readFromPreferences(applicationContext, "cpfSAVED"," ")
-        loginCPF = applyMask(loginCPF!!)
-        editLogin!!.setText(loginCPF)
-        var loginPasswd = Utils.readFromPreferences(applicationContext, "passwdSAVED"," ")
-        editPasswd!!.setText(loginPasswd!!, TextView.BufferType.EDITABLE)
+        if (hasDataUserSaved()) {
+            var loginCPF = Utils.readFromPreferences(applicationContext, "cpfSAVED"," ")
+            loginCPF = applyMask(loginCPF!!)
+            editLogin!!.setText(loginCPF)
+            var loginPasswd = Utils.readFromPreferences(applicationContext, "passwdSAVED"," ")
+            editPasswd!!.setText(loginPasswd!!, TextView.BufferType.EDITABLE)
+        }
     }
 
     private fun saveAuthIDLToken(idlToken: String?) {
