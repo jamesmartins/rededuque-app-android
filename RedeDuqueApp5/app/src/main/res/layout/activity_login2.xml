@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/layout_login"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        tools:ignore="MissingPrefix">
+
+    <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="fitXY"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="100dp"
+            android:src="@drawable/user_icon" />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/fieldLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imageView"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginTop="40dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:gravity="center"
+            android:imeOptions="actionNext"
+            android:textColorHint="@color/text_color_second">
+
+        <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/edtLogin"
+                fontPath="fonts/Avenir.ttc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Informe seu CPF/CNPJ"
+                android:paddingTop="7dp"
+                android:singleLine="true"
+                android:textSize="20sp"
+                android:textColor="@color/text_color_primary"
+                android:textColorHighlight="@color/text_color_primary"
+                android:textColorHint="@color/text_color_primary"
+                android:visibility="visible"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/fieldPassword"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fieldLogin"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:imeOptions="actionDone"
+            android:textColorHint="@color/text_color_second"
+           android:layout_centerInParent="true"
+            app:passwordToggleEnabled="true"
+            app:passwordToggleTint="@android:color/black">
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtPasssword"
+                fontPath="fonts/Avenir.ttc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Sua Senha"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:paddingRight="110dp"
+                android:paddingTop="7dp"
+                android:textSize="20sp"
+                android:textColor="@color/text_color_primary"
+                android:textColorHighlight="@color/text_color_primary"
+                android:textColorHint="@color/text_color_primary"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/txtCheckLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Manter informações do login"
+            android:layout_below="@+id/fieldPassword"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp" />
+
+    <Button
+            android:id="@+id/btnLogin"
+            fontPath="fonts/Avenir.ttc"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_below="@+id/txtCheckLogin"
+            android:layout_marginLeft="45dp"
+            android:layout_marginRight="45dp"
+            android:background="@drawable/btn_login_entrar"
+            android:backgroundTint="@color/colorPrimary"
+            android:text="Entrar"
+            android:layout_marginTop="30dp"
+            android:textColor="@android:color/white" />
+
+    <TextView
+            android:id="@+id/txtRememberPassword"
+            fontPath="fonts/Avenir.ttc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btnLogin"
+            android:gravity="center"
+            android:paddingTop="10dp"
+            android:layout_marginTop="15dp"
+            android:text="Esqueci minha senha"
+            android:textColor="@color/text_recovery_passwd"
+            android:textSize="13sp"
+            android:layout_centerInParent="true" />
+
+    <LinearLayout
+            android:id="@+id/pnlBottom"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginBottom="5dp"
+            android:layout_below="@+id/txtRememberPassword"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+        <TextView
+                android:id="@+id/txtnotcount"
+                fontPath="fonts/Avenir.ttc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:alpha="0.7"
+                android:ellipsize="end"
+                android:gravity="end"
+                android:maxLines="1"
+                android:textSize="10dp"
+                android:textAllCaps="true"
+                android:scrollHorizontally="true"
+                android:text="Não possui cadastro"
+                android:textColor="@android:color/tertiary_text_dark" />
+
+        <TextView
+                android:id="@+id/txtCreateLogin"
+                fontPath="fonts/Avenir.ttc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="left"
+                android:maxLines="1"
+                android:textAllCaps="true"
+                android:textSize="10dp"
+                android:paddingBottom="10dp"
+                android:paddingLeft="10dp"
+                android:paddingTop="10dp"
+                android:scrollHorizontally="true"
+                android:text="Cadastre-se"
+                android:textColor="@color/text_recovery_passwd" />
+    </LinearLayout>
+
+</RelativeLayout>
+
+
