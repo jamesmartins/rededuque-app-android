@@ -53,15 +53,6 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
 
         initViews()
 
-        btnLogin!!.setOnClickListener {
-            var login = editLogin!!.text.toString().onlyNumbers2()
-            var passwd = editPasswd!!.text.toString().trim()
-            // validate
-            validate(login, passwd)
-            //Do login
-            doLogin(login, passwd)
-        }
-
         verifyUserSavedPass()
     }
 
@@ -114,6 +105,16 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
             startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
         }
+
+        btnLogin!!.setOnClickListener {
+            var login = editLogin!!.text.toString().onlyNumbers2()
+            var passwd = editPasswd!!.text.toString().trim()
+            var hasSavedUserData = txtCheckLogin!!.isChecked
+            // validate
+            validate(login, passwd)
+            //Do login
+            doLogin(login, passwd, hasSavedUserData)
+        }
     }
 
     private fun validate(login : String, passwd: String){
@@ -133,15 +134,17 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         }
     }
 
-    private fun doLogin(user : String, passwd: String) {
+    private fun doLogin(user : String, passwd: String, hasUserDataSaved : Boolean) {
         if (!isConnected) {
             toast("Falta de Conexão!", Toast.LENGTH_SHORT)
             return
         }
 
         // saving CPF data
-        if (txtCheckLogin!!.isChecked){
+        if (hasUserDataSaved){
             saveDataUser(user, passwd)
+        } else {
+            saveDataUser("", "")
         }
 
         //Do authenticate
@@ -191,7 +194,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
 
                                     // open activity with webview + url authenticated user pass
                                     startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
-                                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                                    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
                                 }
                             })
                         }
