@@ -37,29 +37,28 @@ class IntroActivity2 : AppCompatActivity() {
         txtParceiro = findViewById(R.id.txtParceiro)
         btnLoginMenu.setOnClickListener {
             startActivity(Intent(applicationContext, LoginActivity2::class.java))
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
-//            finish()
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
         // Open Cadastro page webview
         txtCadastro!!.setOnClickListener {
             var mUrl = baseURL + mUrlCadastro
             startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
         // Open Fale Conosco
         txtFaleConosco!!.setOnClickListener {
             var mUrl = baseURL + mUrlFaleConosco
             startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
         // Open Parceiro
         txtParceiro!!.setOnClickListener {
             var mUrl = baseURL + mUrlParceiro
             startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
     }
 }

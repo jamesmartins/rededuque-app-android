@@ -1,22 +1,25 @@
 package br.com.rededuque.android
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.ActionMode
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.Toolbar
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import br.com.rededuque.android.extensions.isValidCPF
-import br.com.rededuque.android.extensions.onlyNumbers
 import br.com.rededuque.android.extensions.onlyNumbers2
 import br.com.rededuque.android.extensions.toBase64
 import br.com.rededuque.android.extensions.toast
@@ -24,7 +27,15 @@ import br.com.rededuque.android.model.User
 import br.com.rededuque.android.model.UserAuthData
 import br.com.rededuque.android.parse.Json
 import br.com.rededuque.android.services.HttpClient
-import br.com.rededuque.android.utils.*
+import br.com.rededuque.android.utils.PROJECT_ID
+import br.com.rededuque.android.utils.Utils
+import br.com.rededuque.android.utils.baseURL
+import br.com.rededuque.android.utils.mUrlAuthApp
+import br.com.rededuque.android.utils.mUrlCadastro
+import br.com.rededuque.android.utils.mUrlRecuperacaoSenha
+import br.com.rededuque.android.utils.mUrlUserPushDataInformation
+import br.com.rededuque.android.utils.mUrlUserSearchKeyData
+import br.com.rededuque.android.utils.mUrl_NOVO_MENU
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.onesignal.OneSignal
@@ -32,6 +43,7 @@ import okhttp3.Call
 import org.json.JSONObject
 import java.io.IOException
 import javax.security.auth.callback.Callback
+
 
 class LoginActivity2 : AppCompatActivity(), TextWatcher {
 
@@ -44,16 +56,44 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
     var txtCheckLogin: SwitchMaterial? = null
     private var progressBar: ProgressBar? = null
     private var isConnected = false
+    private lateinit var mToolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login2)
+        setContentView(R.layout.activity_login3)
+
+        mToolbar = findViewById(R.id.toolbar_login)
+        this.setSupportActionBar(mToolbar)
+        this.supportActionBar?.title = "Faça seu login"
+        this.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        this.supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
 
         isConnected = Utils.isNetworkConnected(applicationContext)
 
         initViews()
 
         verifyUserSavedPass()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+//                startActivity(Intent(applicationContext, WebViewActivity::class.java))
+//                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                finish()
+                return true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onActionModeStarted(mode: ActionMode?) {
+        super.onActionModeStarted(mode)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        return super.onCreateOptionsMenu(menu)
     }
 
     private fun verifyUserSavedPass(){
@@ -66,7 +106,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                         if (userIDUUrlpass != null){
                             // open activity with webview + url authenticated user pass
                             startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", userIDUUrlpass.trim()))
-                            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
                         } else {
                             toast("Digite novamente seus dados do login!")
                         }
@@ -92,28 +132,27 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         txtCreateLogin = findViewById(R.id.txtCreateLogin)
         txtCheckLogin = findViewById(R.id.txtCheckLogin)
 
-
         //actions
         txtRememberPassword!!.setOnClickListener {
             var mUrl = baseURL + mUrlRecuperacaoSenha
             startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
         txtCreateLogin!!.setOnClickListener {
             var mUrl = baseURL + mUrlCadastro
             startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
         btnLogin!!.setOnClickListener {
             var login = editLogin!!.text.toString().onlyNumbers2()
             var passwd = editPasswd!!.text.toString().trim()
-            var hasSavedUserData = txtCheckLogin!!.isChecked
+            var hasUserDataSaved = txtCheckLogin!!.isChecked
             // validate
             validate(login, passwd)
             //Do login
-            doLogin(login, passwd, hasSavedUserData)
+            doLogin(login, passwd, hasUserDataSaved)
         }
     }
 
@@ -134,7 +173,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         }
     }
 
-    private fun doLogin(user : String, passwd: String, hasUserDataSaved : Boolean) {
+    private fun doLogin(user : String, passwd: String, hasUserDataSaved: Boolean) {
         if (!isConnected) {
             toast("Falta de Conexão!", Toast.LENGTH_SHORT)
             return
@@ -194,7 +233,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
 
                                     // open activity with webview + url authenticated user pass
                                     startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
-                                    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+                                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
                                 }
                             })
                         }

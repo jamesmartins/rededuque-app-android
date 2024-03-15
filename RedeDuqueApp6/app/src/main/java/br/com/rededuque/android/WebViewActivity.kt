@@ -14,6 +14,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
 import android.widget.Toast
+import br.com.rededuque.android.extensions.toast
 import br.com.rededuque.android.model.User
 import br.com.rededuque.android.utils.Utils
 
@@ -125,6 +126,10 @@ class WebViewActivity : AppCompatActivity() {
             progressBar!!.setVisibility(View.VISIBLE)
             this@WebViewActivity.progressBar!!.progress = 0
             super.onPageStarted(view, url, favicon)
+
+            if (url!!.contains("intro.do")) {
+                finish()
+            }
         }
     }
 
