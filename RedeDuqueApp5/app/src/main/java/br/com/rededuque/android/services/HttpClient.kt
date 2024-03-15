@@ -72,16 +72,33 @@ class HttpClient {
     }
 
     @Throws(IOException::class)
-    fun postAsync3(url: String, json: String, callback: Callback): Call {
+    fun postAsync3(url: String, json: String, code : String ,callback: Callback): Call {
         val client = OkHttpClient()
         val mediaType = "application/json".toMediaType()
         val body = json.toRequestBody(mediaType)
         val request = Request.Builder()
             .url("https://adm.bunkerapp.com.br/wsjson/authApp.do")
             .post(body)
-            .addHeader("authorizationCode", "VVNOMFZHeldxMkVJR1JCWmZkNVpxMU1icHFGRzhROHlXUWZrTnowVEQ4Y0VqekFGWURIUEt3wqLCog==")
+            .addHeader("authorizationCode", code)
             .addHeader("Content-Type", "application/json")
-            .addHeader("Cookie", "PHPSESSID=im116o1bce4q3e3bgj3i6fngnj629k7f17csan7co29kke2jasj0")
+//            .addHeader("Cookie", "PHPSESSID=im116o1bce4q3e3bgj3i6fngnj629k7f17csan7co29kke2jasj0")
+            .build()
+        val call = client.newCall(request)
+        call.enqueue(callback)
+        return call
+    }
+
+    @Throws(IOException::class)
+    fun postAsync4(url: String, json: String, code : String, callback: Callback): Call {
+        val client = OkHttpClient()
+        val mediaType = "application/json".toMediaType()
+        val body = json.toRequestBody(mediaType)
+        val request = Request.Builder()
+            .url("https://adm.bunkerapp.com.br/wsjson/authApp.do")
+            .post(body)
+            .addHeader("authorizationCode", code)
+            .addHeader("Content-Type", "application/json")
+            .addHeader("Cookie", "cMKjR0dLVXlpUTRzwqNOczh3c8KjSmZjRWNVSmE3eThNUG1ic8KjVjM1M2dyVGtKM0ZZbkpNcWd1NEpRa1RsaDhraWZkcMKjMURycU9xQXhaZnJkMG5FMGR0aDJKVXk0a0ZpaWxsZFZtYlZ5MURzwqNpb21vajZNRkhoUnVlY0lXZmdVMGk4VWVXWDlsSGRPUTBEcWd2V1h0N2Zidk5hb28yR0doelRDUVRDSWhqRkpJMkJuOFQwRUQwUjJ6MkxLMHfCosKi")
             .build()
         val call = client.newCall(request)
         call.enqueue(callback)

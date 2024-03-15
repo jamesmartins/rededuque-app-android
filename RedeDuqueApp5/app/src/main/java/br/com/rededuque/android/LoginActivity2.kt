@@ -28,22 +28,13 @@ import br.com.rededuque.android.model.User
 import br.com.rededuque.android.model.UserAuthData
 import br.com.rededuque.android.parse.Json
 import br.com.rededuque.android.services.HttpClient
-import br.com.rededuque.android.utils.PROJECT_ID
-import br.com.rededuque.android.utils.Utils
-import br.com.rededuque.android.utils.baseURL
-import br.com.rededuque.android.utils.mUrlAuthApp
-import br.com.rededuque.android.utils.mUrlCadastro
-import br.com.rededuque.android.utils.mUrlRecuperacaoSenha
-import br.com.rededuque.android.utils.mUrlUserPushDataInformation
-import br.com.rededuque.android.utils.mUrlUserSearchKeyData
-import br.com.rededuque.android.utils.mUrl_NOVO_MENU
+import br.com.rededuque.android.utils.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.onesignal.OneSignal
 import okhttp3.Call
 import org.json.JSONObject
 import java.io.IOException
-import javax.security.auth.callback.Callback
 
 
 class LoginActivity2 : AppCompatActivity(), TextWatcher {
@@ -267,11 +258,11 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
     private fun doAuthenticate(user: String, passwd: String, completion: (success: Boolean, user: UserAuthData?) -> Unit) {
         val postparams = Json.getAuthUser(user, passwd)
 
-        HttpClient.getInstance.postAsync3(mUrlAuthApp, postparams, object : Callback, okhttp3.Callback {
+        HttpClient.getInstance.postAsync3(mUrlAuthApp, postparams, code = CODE_AUTHETICATION , callback =  object : okhttp3.Callback {
 
             override fun onFailure(call: Call, e: IOException) {
                 completion(false, null)
-                Log.d(this::class.simpleName, "Error Comunication")
+                Log.e(this::class.simpleName, "Error Comunication" + e.message)
             }
 
             override fun onResponse(call: Call, response: okhttp3.Response) {
@@ -291,7 +282,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                         }
                     } else {
                         completion(false, null)
-                        Log.d(getString(R.string.Error_To_Login),"Aconteceu algum problema no Login...")
+                        Log.e(getString(R.string.Error_To_Login),"Aconteceu algum problema no Login...")
                     }
                 }
             }
@@ -374,17 +365,17 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
     private fun processRedeDuqueUrlKey(keyValue : String, companyId: Int = PROJECT_ID, completion: (success: Boolean, user: User?) -> Unit) {
         val postparams = Json.getRDLoggedUser(keyValue.toBase64(), companyId)
 
-        HttpClient.getInstance.postAsync(mUrlUserSearchKeyData, postparams, object : Callback, okhttp3.Callback {
+        HttpClient.getInstance.postAsync4(url = mUrlUserSearchKeyData, json = postparams, code = CODE_CONSULTACLI, callback = object : okhttp3.Callback {
 
             override fun onFailure(call: Call, e: IOException) {
                 completion(false,  User())
-                Log.d(this::class.simpleName, "Error Comunication")
+                Log.e(this::class.simpleName, "Error Comunication in processRedeDuqueUrlKey" + e.message)
             }
 
-            override fun onResponse(call: Call, response: okhttp3.Response) {
-                if (response.isSuccessful && response.code == 200) {
+            override fun onResponse(call: Call, responseObj: okhttp3.Response) {
+                if (responseObj.isSuccessful && responseObj.code == 200) {
                     //get data user from idU Key
-                    var userResult = response.peekBody(2048).string()
+                    var userResult = responseObj.peekBody(2048).string()
                     if (userResult.isNotEmpty() && userResult.isNotBlank()){
                         val obj = JSONObject(userResult)
                         if (obj.has("RD_userId")) {
@@ -396,11 +387,11 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                         }
                     } else {
                         completion(false, User())
-                        Log.d("Error_Message","Aconteceu algum problema de dados da RedeDuque...")
+                        Log.e("Error_Message","Aconteceu algum problema de dados da RedeDuque...")
                     }
                 } else {
                     completion(false, User())
-                    Log.d(getString(R.string.Error_With_RedeDuque),"Aconteceu algum problema na conexão...")
+                    Log.e(getString(R.string.Error_With_RedeDuque),"Aconteceu algum problema na conexão...")
                 }
             }
         })
@@ -409,22 +400,22 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
     private fun sendOneSignalDataToRedeDuque(userLogged : User, completion: (success: Boolean) -> Unit) {
         val postparams = Json.getUserOneSignalData(userLogged)
 
-        HttpClient.getInstance.postAsync(mUrlUserPushDataInformation, postparams, object : Callback, okhttp3.Callback {
+        HttpClient.getInstance.postAsync3(url = mUrlUserPushDataInformation, json = postparams, code = CODE_SENDTOKENAPP, callback =  object : okhttp3.Callback {
 
             override fun onFailure(call: Call, e: IOException) {
                 completion(false)
-                Log.d(this::class.simpleName, "Error Comunication")
+                Log.e(this::class.simpleName, "Error Comunication sendOneSignalDataToRedeDuque:" + e.message)
             }
 
-            override fun onResponse(call: Call, response: okhttp3.Response) {
-                if (response.isSuccessful && response.code == 200) {
+            override fun onResponse(call: Call, responseFromDuque: okhttp3.Response) {
+                if (responseFromDuque.isSuccessful && responseFromDuque.code == 200) {
                     //get data user from idU Key
                     Log.d(getString(R.string.Success_To_RedeDuque),"Enviados dados OneSignal com sucesso...")
                     completion(true)
 
                 } else {
                     completion(false)
-                    Log.d(getString(R.string.Error_With_RedeDuque),"Aconteceu algum problema na conexão...")
+                    Log.e(getString(R.string.Error_With_RedeDuque),"Aconteceu algum problema na conexão..." + call.execute().message.toString())
                 }
             }
         })
