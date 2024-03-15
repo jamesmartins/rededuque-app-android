@@ -232,7 +232,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                                     // save url authenticated user pass
                                     saveIduPassData(mUrl, true)
 
-                                    if (!hasSecurityAccessBiometric()!!){
+                                    if (hasSecurityAccessBiometric()!! == false){
                                         val builder = AlertDialog.Builder(this)
                                         builder.setTitle("Atenção")
                                         builder.setMessage("Deseja ativar o acesso seguro por código de bloqueio ou leitura facial?")
