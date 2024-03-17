@@ -63,8 +63,6 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         isConnected = Utils.isNetworkConnected(applicationContext)
 
         initViews()
-
-        verifyUserSavedPass()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -215,6 +213,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                             saveAuthCookies(emailCookie, passwdCookie)
 
                             //Send OenSignal Data to RedeDuque
+
                             sendOneSignalDataToRedeDuque(userRD!!, completion = {
                                 if (it) {
                                     Log.d(getString(R.string.Data_Sent_to_RedeDuque), "Dados OneSignal Enviados para Rede Duque!")
@@ -233,9 +232,8 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                                             builder.setMessage("Deseja ativar o acesso seguro por código de bloqueio ou leitura facial?")
                                                 .setPositiveButton("Sim") { _, _ ->
                                                     saveSecurityAccessBiometric(true)
-                                                    if (hasDataUserSaved() && hasIduPassDataSaved()!!){
-                                                        verifyUserSavedPass()
-                                                    }
+                                                    verifyUserSavedPass()
+
                                                 }
                                                 .setNegativeButton("Não") { _, _ ->
                                                     saveSecurityAccessBiometric(false)
@@ -359,6 +357,11 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
             var loginPasswd = Utils.readFromPreferences(applicationContext, "passwdSAVED"," ")
             editPasswd!!.setText(loginPasswd!!, TextView.BufferType.EDITABLE)
         }
+        //Verify if exist biometric preferences saved
+        if (hasSecurityAccessBiometric()!!){
+            verifyUserSavedPass()
+        }
+
     }
 
     private fun saveAuthIDLToken(idlToken: String?) {
