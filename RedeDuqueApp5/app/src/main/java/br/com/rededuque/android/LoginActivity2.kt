@@ -365,7 +365,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
     private fun processRedeDuqueUrlKey(keyValue : String, companyId: Int = PROJECT_ID, completion: (success: Boolean, user: User?) -> Unit) {
         val postparams = Json.getRDLoggedUser(keyValue.toBase64(), companyId)
 
-        HttpClient.getInstance.postAsync4(url = mUrlUserSearchKeyData, json = postparams, code = CODE_CONSULTACLI, callback = object : okhttp3.Callback {
+        HttpClient.getInstance.postAsync(url = mUrlUserSearchKeyData, json = postparams, callback = object : okhttp3.Callback {
 
             override fun onFailure(call: Call, e: IOException) {
                 completion(false,  User())
@@ -400,7 +400,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
     private fun sendOneSignalDataToRedeDuque(userLogged : User, completion: (success: Boolean) -> Unit) {
         val postparams = Json.getUserOneSignalData(userLogged)
 
-        HttpClient.getInstance.postAsync3(url = mUrlUserPushDataInformation, json = postparams, code = CODE_SENDTOKENAPP, callback =  object : okhttp3.Callback {
+        HttpClient.getInstance.postAsync(url = mUrlUserPushDataInformation, json = postparams,  callback =  object : okhttp3.Callback {
 
             override fun onFailure(call: Call, e: IOException) {
                 completion(false)
