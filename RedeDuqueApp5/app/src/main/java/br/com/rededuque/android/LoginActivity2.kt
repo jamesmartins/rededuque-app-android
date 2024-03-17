@@ -224,22 +224,27 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                                     saveIduPassData(mUrl, true)
 
                                     if (hasSecurityAccessBiometric()!! == false){
-                                        val builder = AlertDialog.Builder(this)
-                                        builder.setTitle("Atenção")
-                                        builder.setMessage("Deseja ativar o acesso seguro por código de bloqueio ou leitura facial?")
-                                            .setPositiveButton("Sim") { _, _ ->
-                                                saveSecurityAccessBiometric(true)
-                                                if (hasDataUserSaved() && hasIduPassDataSaved()!!){
-                                                    verifyUserSavedPass()
+                                        // Process the response
+
+                                        // Process the response
+                                        runOnUiThread {
+                                            val builder = AlertDialog.Builder(this)
+                                            builder.setTitle("Atenção")
+                                            builder.setMessage("Deseja ativar o acesso seguro por código de bloqueio ou leitura facial?")
+                                                .setPositiveButton("Sim") { _, _ ->
+                                                    saveSecurityAccessBiometric(true)
+                                                    if (hasDataUserSaved() && hasIduPassDataSaved()!!){
+                                                        verifyUserSavedPass()
+                                                    }
                                                 }
-                                            }
-                                            .setNegativeButton("Não") { _, _ ->
-                                                saveSecurityAccessBiometric(false)
-                                                // open activity with webview + url authenticated user pass
-                                                startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
-                                                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-                                            }
-                                        builder.show()
+                                                .setNegativeButton("Não") { _, _ ->
+                                                    saveSecurityAccessBiometric(false)
+                                                    // open activity with webview + url authenticated user pass
+                                                    startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
+                                                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                                                }
+                                            builder.show()
+                                        }
 
                                     } else {
                                         // open activity with webview + url authenticated user pass
