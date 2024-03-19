@@ -10,10 +10,7 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.MenuItem
 import android.view.View
-import android.webkit.WebChromeClient
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
@@ -72,6 +69,7 @@ class WebViewActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CUPCAKE) {
             mWebView!!.settings.builtInZoomControls = false
         }
+        mWebView!!.settings.domStorageEnabled = true
         mWebView!!.webChromeClient = WebChromeClient()
         mWebView!!.webViewClient = CustomWebViewClientv2()
 
@@ -146,8 +144,22 @@ class WebViewActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+
         super.onBackPressed()
     }
+
+    // tela do token: tipoToken.do
+    // tela de validar do token: validaDadosToken
+    // tela que gera o token: geratoken.do
+
+    // cadastro de veiculos: cadVeiculo.do
+    // minhas ofertas: ofertas.do
+    // cadastro: cadastro_V2.do
+    // extrato relCompras.do
+
+    // mensagens: historicoPush.do
+    //endereços: enderecosDuque.php
+    //contato: faleConosco.do
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
