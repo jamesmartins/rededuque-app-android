@@ -68,6 +68,16 @@ class WebViewActivity : AppCompatActivity() {
 
     inner class CustomWebViewClientv2 : WebViewClient() {
 
+        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+            progressBar!!.setVisibility(View.VISIBLE)
+            this@WebViewActivity.progressBar!!.progress = 0
+            super.onPageStarted(view, url, favicon)
+
+            if (url!!.contains("intro.do")) {
+                finish()
+            }
+        }
+
         override fun onPageFinished(webview: WebView?, url: String?) {
             progressBar!!.setVisibility(View.GONE)
             this@WebViewActivity.progressBar!!.setProgress(100)
@@ -120,16 +130,6 @@ class WebViewActivity : AppCompatActivity() {
                 }
             }
             return true
-        }
-
-        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-            progressBar!!.setVisibility(View.VISIBLE)
-            this@WebViewActivity.progressBar!!.progress = 0
-            super.onPageStarted(view, url, favicon)
-
-            if (url!!.contains("intro.do")) {
-                finish()
-            }
         }
     }
 

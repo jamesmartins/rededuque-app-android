@@ -115,6 +115,10 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
 
     override fun onResume() {
         super.onResume()
+        progressBar.let {
+            progressBar!!.progress = 0
+            progressBar!!.visibility = View.GONE
+        }
         readFromAuthCookies()
     }
 
@@ -129,9 +133,6 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         txtCreateLogin = findViewById(R.id.txtCreateLogin)
         txtCheckLogin = findViewById(R.id.txtCheckLogin)
         progressBar = findViewById(R.id.progress)
-        progressBar!!.progress = 0
-        progressBar!!.visibility = View.GONE
-
 
         //actions
         txtRememberPassword!!.setOnClickListener {
@@ -184,7 +185,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
             return
         }
 
-        progressBar!!.setVisibility(View.VISIBLE)
+        progressBar!!.visibility = View.VISIBLE
         this@LoginActivity2.progressBar!!.progress = 0
 
         // saving CPF data
@@ -399,13 +400,13 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         HttpClient.getInstance.postAsync(url = mUrlUserSearchKeyData, json = postparams, callback = object : okhttp3.Callback {
 
             override fun onFailure(call: Call, e: IOException) {
-                completion(false,  User())
                 Log.e(this::class.simpleName, "Error Comunication in processRedeDuqueUrlKey" + e.message)
                 runOnUiThread {
                     progressBar!!.setVisibility(View.GONE)
                     this@LoginActivity2.progressBar!!.progress = 100
                     toast("Erro de Comunicação com a Rededuque: " + e.message)
                 }
+                completion(false,  User())
             }
 
             override fun onResponse(call: Call, responseObj: okhttp3.Response) {
@@ -416,28 +417,29 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                         val obj = JSONObject(userResult)
                         if (obj.has("RD_userId")) {
                             var userLogged = Json.toRDUser(userResult)
+                            Log.d("SUCESSO","CONSULTA DO CLIENTE REDEDUQUE FEITA COM SUCESSO...")
                             completion(true, userLogged)
                         } else {
-                            completion(false, User())
                             Log.d("Error_Message","Aconteceu algum problema de dados da RedeDuque...")
+                            completion(false, User())
                         }
                     } else {
-                        completion(false, User())
                         Log.e("Error_Message","Aconteceu algum problema de dados da RedeDuque...")
                         runOnUiThread {
                             progressBar!!.setVisibility(View.GONE)
                             this@LoginActivity2.progressBar!!.progress = 100
                             toast("Aconteceu algum problema de dados da RedeDuque...")
                         }
+                        completion(false, User())
                     }
                 } else {
-                    completion(false, User())
                     Log.e(getString(R.string.Error_With_RedeDuque),"Aconteceu algum problema na conexão...")
                     runOnUiThread {
                         progressBar!!.setVisibility(View.GONE)
                         this@LoginActivity2.progressBar!!.progress = 100
                         toast("Aconteceu algum problema na conexão...")
                     }
+                    completion(false, User())
                 }
             }
         })
@@ -449,13 +451,13 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         HttpClient.getInstance.postAsync(url = mUrlUserPushDataInformation, json = postparams,  callback =  object : okhttp3.Callback {
 
             override fun onFailure(call: Call, e: IOException) {
-                completion(false)
                 Log.e(this::class.simpleName, "Error Comunication sendOneSignalDataToRedeDuque:" + e.message)
                 runOnUiThread {
                     progressBar!!.setVisibility(View.GONE)
                     this@LoginActivity2.progressBar!!.progress = 100
                     toast("Erro de Comunicação com a Rededuque..." + e.message)
                 }
+                completion(false)
             }
 
             override fun onResponse(call: Call, responseFromDuque: okhttp3.Response) {
@@ -463,15 +465,14 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                     //get data user from idU Key
                     Log.d(getString(R.string.Success_To_RedeDuque),"Enviados dados OneSignal com sucesso...")
                     completion(true)
-
                 } else {
-                    completion(false)
                     Log.e(getString(R.string.Error_With_RedeDuque),"Aconteceu algum problema na conexão..." + call.execute().message.toString())
                     runOnUiThread {
                         progressBar!!.setVisibility(View.GONE)
                         this@LoginActivity2.progressBar!!.progress = 100
                         toast("Aconteceu algum problema na conexão...")
                     }
+                    completion(false)
                 }
             }
         })
