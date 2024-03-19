@@ -135,13 +135,17 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         //actions
         txtRememberPassword!!.setOnClickListener {
             var mUrl = baseURL + mUrlRecuperacaoSenha
-            startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
+            startActivity(Intent(applicationContext, WebViewActivity::class.java)
+                .putExtra("URL_LOAD_CONTENT", mUrl)
+                .putExtra("URL_LOAD_TITLE","Recuperar Senha"))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
         txtCreateLogin!!.setOnClickListener {
             var mUrl = baseURL + mUrlCadastro
-            startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
+            startActivity(Intent(applicationContext, WebViewActivity::class.java)
+                .putExtra("URL_LOAD_CONTENT", mUrl)
+                .putExtra("URL_LOAD_TITLE","Codastro"))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
