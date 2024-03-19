@@ -19,6 +19,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.Toolbar
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
+import androidx.browser.trusted.ScreenOrientation
 import androidx.core.content.ContextCompat
 import br.com.rededuque.android.extensions.isValidCPF
 import br.com.rededuque.android.extensions.onlyNumbers2
@@ -88,12 +89,12 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
 
     private fun verifyUserSavedPass(){
         if (hasDataUserSaved() && hasIduPassDataSaved()!!){
+            var userIDUUrlpass = Utils.readFromPreferences(applicationContext, "userIDUPassSaved", " ")
             // Biometric request
             if (initBiometricV2()){
                 promptInfo(completion = {
                     if (it){
-                        var userIDUUrlpass = Utils.readFromPreferences(applicationContext, "userIDUPassSaved", " ")
-                        if (userIDUUrlpass != null){
+                       if (userIDUUrlpass != null){
                             // open activity with webview + url authenticated user pass
                             startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", userIDUUrlpass.trim()))
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
@@ -102,7 +103,13 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                         }
                     }
                 })
-            }
+            } /*else {
+                // haven`t device credentials
+                if (userIDUUrlpass != null){
+                    startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", userIDUUrlpass.trim()))
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                }
+            }*/
         }
     }
 
@@ -121,6 +128,10 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         txtRememberPassword = findViewById(R.id.txtRememberPassword)
         txtCreateLogin = findViewById(R.id.txtCreateLogin)
         txtCheckLogin = findViewById(R.id.txtCheckLogin)
+        progressBar = findViewById(R.id.progress)
+        progressBar!!.progress = 0
+        progressBar!!.visibility = View.GONE
+
 
         //actions
         txtRememberPassword!!.setOnClickListener {
@@ -146,6 +157,10 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+    }
+
     private fun validate(login : String, passwd: String){
         if (login.isBlank() || login.isEmpty()){
             toast("CPF inválido!!")
@@ -168,6 +183,9 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
             toast("Falta de Conexão!", Toast.LENGTH_SHORT)
             return
         }
+
+        progressBar!!.setVisibility(View.VISIBLE)
+        this@LoginActivity2.progressBar!!.progress = 0
 
         // saving CPF data
         if (hasUserDataSaved){
@@ -233,10 +251,15 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                                                 .setPositiveButton("Sim") { _, _ ->
                                                     saveSecurityAccessBiometric(true)
                                                     verifyUserSavedPass()
+                                                    progressBar!!.setVisibility(View.GONE)
+                                                    this@LoginActivity2.progressBar!!.progress = 100
 
                                                 }
                                                 .setNegativeButton("Não") { _, _ ->
                                                     saveSecurityAccessBiometric(false)
+
+                                                    progressBar!!.setVisibility(View.GONE)
+                                                    this@LoginActivity2.progressBar!!.progress = 100
                                                     // open activity with webview + url authenticated user pass
                                                     startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
                                                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
@@ -378,6 +401,11 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
             override fun onFailure(call: Call, e: IOException) {
                 completion(false,  User())
                 Log.e(this::class.simpleName, "Error Comunication in processRedeDuqueUrlKey" + e.message)
+                runOnUiThread {
+                    progressBar!!.setVisibility(View.GONE)
+                    this@LoginActivity2.progressBar!!.progress = 100
+                    toast("Erro de Comunicação com a Rededuque: " + e.message)
+                }
             }
 
             override fun onResponse(call: Call, responseObj: okhttp3.Response) {
@@ -396,10 +424,20 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                     } else {
                         completion(false, User())
                         Log.e("Error_Message","Aconteceu algum problema de dados da RedeDuque...")
+                        runOnUiThread {
+                            progressBar!!.setVisibility(View.GONE)
+                            this@LoginActivity2.progressBar!!.progress = 100
+                            toast("Aconteceu algum problema de dados da RedeDuque...")
+                        }
                     }
                 } else {
                     completion(false, User())
                     Log.e(getString(R.string.Error_With_RedeDuque),"Aconteceu algum problema na conexão...")
+                    runOnUiThread {
+                        progressBar!!.setVisibility(View.GONE)
+                        this@LoginActivity2.progressBar!!.progress = 100
+                        toast("Aconteceu algum problema na conexão...")
+                    }
                 }
             }
         })
@@ -413,6 +451,11 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
             override fun onFailure(call: Call, e: IOException) {
                 completion(false)
                 Log.e(this::class.simpleName, "Error Comunication sendOneSignalDataToRedeDuque:" + e.message)
+                runOnUiThread {
+                    progressBar!!.setVisibility(View.GONE)
+                    this@LoginActivity2.progressBar!!.progress = 100
+                    toast("Erro de Comunicação com a Rededuque..." + e.message)
+                }
             }
 
             override fun onResponse(call: Call, responseFromDuque: okhttp3.Response) {
@@ -424,6 +467,11 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                 } else {
                     completion(false)
                     Log.e(getString(R.string.Error_With_RedeDuque),"Aconteceu algum problema na conexão..." + call.execute().message.toString())
+                    runOnUiThread {
+                        progressBar!!.setVisibility(View.GONE)
+                        this@LoginActivity2.progressBar!!.progress = 100
+                        toast("Aconteceu algum problema na conexão...")
+                    }
                 }
             }
         })

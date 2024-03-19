@@ -41,6 +41,14 @@
                     android:layout_marginTop="100dp"
                     android:src="@drawable/user_icon" />
 
+            <ProgressBar
+                    android:id="@+id/progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_below="@+id/imageView"
+                    android:indeterminate="true"/>
+
 
             <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/fieldLogin"
