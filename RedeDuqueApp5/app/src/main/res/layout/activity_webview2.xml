@@ -8,41 +8,35 @@
         android:background="@android:color/white"
         tools:context=".WebViewActivity">
 
-    <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar_webview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:minHeight="?attr/actionBarSize"
-            android:theme="?attr/actionBarTheme"
-            app:titleTextColor="@android:color/white" />
-
     <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="?attr/actionBarSize"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:backgroundTint="@color/colorPrimary"
-                tools:context=".WebViewActivity">
+<!--        <ScrollView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent" >-->
 
-            <WebView android:id="@+id/mwebview"
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:tools="http://schemas.android.com/tools"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent"
+                    android:backgroundTint="@color/colorPrimary"
+                    tools:context=".WebViewActivity">
 
-            <ProgressBar
-                    android:id="@+id/progress"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:indeterminate="true"/>
+                <WebView android:id="@+id/mwebview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
 
-        </RelativeLayout>
+                <ProgressBar
+                        android:id="@+id/progress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:indeterminate="true"/>
 
+            </RelativeLayout>
+<!--        </ScrollView>-->
     </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

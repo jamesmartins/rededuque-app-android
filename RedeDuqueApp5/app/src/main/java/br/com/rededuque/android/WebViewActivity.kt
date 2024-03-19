@@ -7,6 +7,8 @@ import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.TypedValue
+import android.view.MenuItem
 import android.view.View
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
@@ -29,15 +31,17 @@ class WebViewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_webview2)
 
-        mToolbar = findViewById(R.id.toolbar_webview)
-        this.setSupportActionBar(mToolbar)
-//        this.supportActionBar?.title = "Faça seu login"
+        var mUrlLoading = intent.extras!!.getString("URL_LOAD_CONTENT")
+        var mUrlTitle = intent.extras!!.getString("URL_LOAD_TITLE")
+
         this.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        this.supportActionBar?.setElevation(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+            60F, getResources().getDisplayMetrics()));
+        this.supportActionBar?.title = mUrlTitle
         this.supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
 
         initViews()
 
-        var mUrlLoading = intent.extras!!.getString("URL_LOAD_CONTENT")
         loadContent(mUrlLoading!!)
     }
 
@@ -143,6 +147,17 @@ class WebViewActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                return true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
 }

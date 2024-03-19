@@ -25,7 +25,7 @@
                 android:exported="false"
                 android:label="Faça seu login"
                 android:screenOrientation="portrait"
-                android:theme="@style/AppThemeMaterialNoBar" />
+                android:theme="@style/AppThemeBar" />
         <activity
                 android:name=".LoginActivity2"
                 android:exported="false"

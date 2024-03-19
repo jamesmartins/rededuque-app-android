@@ -69,8 +69,6 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-//                startActivity(Intent(applicationContext, WebViewActivity::class.java))
-//                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
                 finish()
                 return true
             }

@@ -43,21 +43,27 @@ class IntroActivity2 : AppCompatActivity() {
         // Open Cadastro page webview
         txtCadastro!!.setOnClickListener {
             var mUrl = baseURL + mUrlCadastro
-            startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
+            startActivity(Intent(applicationContext, WebViewActivity::class.java)
+                .putExtra("URL_LOAD_CONTENT", mUrl)
+                .putExtra("URL_LOAD_TITLE","Cadastro"))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
         // Open Fale Conosco
         txtFaleConosco!!.setOnClickListener {
             var mUrl = baseURL + mUrlFaleConosco
-            startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
+            startActivity(Intent(applicationContext, WebViewActivity::class.java)
+                .putExtra("URL_LOAD_CONTENT", mUrl)
+                .putExtra("URL_LOAD_TITLE","Contato"))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
         // Open Parceiro
         txtParceiro!!.setOnClickListener {
             var mUrl = baseURL + mUrlParceiro
-            startActivity(Intent(applicationContext, WebViewActivity::class.java).putExtra("URL_LOAD_CONTENT", mUrl))
+            startActivity(Intent(applicationContext, WebViewActivity::class.java)
+                .putExtra("URL_LOAD_CONTENT", mUrl)
+                .putExtra("URL_LOAD_TITLE","Parceiro"))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
     }
