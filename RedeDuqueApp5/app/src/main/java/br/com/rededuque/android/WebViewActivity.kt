@@ -14,6 +14,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import br.com.rededuque.android.extensions.toast
 import br.com.rededuque.android.model.User
 import br.com.rededuque.android.utils.Utils
@@ -22,10 +23,17 @@ import br.com.rededuque.android.utils.Utils
 class WebViewActivity : AppCompatActivity() {
     private var mWebView: WebView? = null
     private var progressBar: ProgressBar? = null
+    private lateinit var mToolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_webview)
+        setContentView(R.layout.activity_webview2)
+
+        mToolbar = findViewById(R.id.toolbar_webview)
+        this.setSupportActionBar(mToolbar)
+//        this.supportActionBar?.title = "Faça seu login"
+        this.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        this.supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
 
         initViews()
 
