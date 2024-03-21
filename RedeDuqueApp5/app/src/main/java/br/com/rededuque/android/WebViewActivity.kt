@@ -14,6 +14,7 @@ import android.webkit.*
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
+import androidx.core.widget.NestedScrollView
 import br.com.rededuque.android.extensions.toast
 import br.com.rededuque.android.model.User
 import br.com.rededuque.android.utils.Utils
@@ -23,7 +24,7 @@ class WebViewActivity : AppCompatActivity() {
     private var mWebView: WebView? = null
     private var progressBar: ProgressBar? = null
     private lateinit var mToolbar: Toolbar
-    private lateinit var mNestScroll: Toolbar
+    private lateinit var mNestScroll: NestedScrollView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +60,9 @@ class WebViewActivity : AppCompatActivity() {
 
     private fun initViews() {
         progressBar = findViewById(R.id.progress)
+        mNestScroll = findViewById(R.id.nested_scroll_webview1)
+        mNestScroll.isNestedScrollingEnabled = true
+
         mWebView = findViewById(R.id.mwebview)
         mWebView!!.settings.javaScriptEnabled = true
         mWebView!!.settings.cacheMode = WebSettings.LOAD_NO_CACHE
