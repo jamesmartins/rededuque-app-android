@@ -20,12 +20,21 @@
                 android:exported="false"
                 android:screenOrientation="portrait"
                 android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
+
         <activity
                 android:name=".WebViewActivity"
                 android:exported="false"
                 android:label="Faça seu login"
                 android:screenOrientation="portrait"
                 android:theme="@style/AppThemeBar" />
+
+        <activity
+                android:name=".WebViewMainActivity"
+                android:exported="false"
+                android:label="Faça seu login"
+                android:screenOrientation="portrait"
+                android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
+
         <activity
                 android:name=".LoginActivity2"
                 android:exported="false"

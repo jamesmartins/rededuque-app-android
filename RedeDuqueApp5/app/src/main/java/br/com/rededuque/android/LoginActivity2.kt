@@ -94,9 +94,8 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                     if (it){
                        if (userIDUUrlpass != null){
                             // open activity with webview + url authenticated user pass
-                            startActivity(Intent(applicationContext, WebViewActivity::class.java)
-                                .putExtra("URL_LOAD_CONTENT", userIDUUrlpass.trim())
-                                .putExtra("URL_LOAD_TITLE","Navegaçao"))
+                            startActivity(Intent(applicationContext, WebViewMainActivity::class.java)
+                                .putExtra("URL_LOAD_CONTENT", userIDUUrlpass.trim()))
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
                         } else {
                             toast("Digite novamente os dados do login com manter os dados salvos!")
@@ -246,7 +245,6 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                                     saveIduPassData(mUrl, true)
 
                                     if (hasSecurityAccessBiometric()!! == false){
-                                        // Process the response
 
                                         // Process the response
                                         runOnUiThread {
@@ -266,9 +264,8 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                                                     progressBar!!.setVisibility(View.GONE)
                                                     this@LoginActivity2.progressBar!!.progress = 100
                                                     // open activity with webview + url authenticated user pass
-                                                    startActivity(Intent(applicationContext, WebViewActivity::class.java)
-                                                        .putExtra("URL_LOAD_CONTENT", mUrl)
-                                                        .putExtra("URL_LOAD_TITLE","Navegaçao"))
+                                                    startActivity(Intent(applicationContext, WebViewMainActivity::class.java)
+                                                        .putExtra("URL_LOAD_CONTENT", mUrl))
                                                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
                                                 }
                                             builder.show()
@@ -276,9 +273,8 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
 
                                     } else {
                                         // open activity with webview + url authenticated user pass
-                                        startActivity(Intent(applicationContext, WebViewActivity::class.java)
-                                            .putExtra("URL_LOAD_CONTENT", mUrl)
-                                            .putExtra("URL_LOAD_TITLE","Navegaçao"))
+                                        startActivity(Intent(applicationContext, WebViewMainActivity::class.java)
+                                            .putExtra("URL_LOAD_CONTENT", mUrl))
                                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
                                     }
                                 }
