@@ -23,6 +23,7 @@ class WebViewActivity : AppCompatActivity() {
     private var mWebView: WebView? = null
     private var progressBar: ProgressBar? = null
     private lateinit var mToolbar: Toolbar
+    private lateinit var mNestScroll: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
