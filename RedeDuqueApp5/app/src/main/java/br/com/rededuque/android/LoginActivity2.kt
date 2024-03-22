@@ -346,6 +346,14 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                         }
                         completion(false, null, "Aconteceu algum problema no Login...")
                     }
+                } else {
+                    Log.e(getString(R.string.Error_To_Login),"Aconteceu algum problema no Login...")
+                    runOnUiThread {
+                        progressBar!!.setVisibility(View.GONE)
+                        this@LoginActivity2.progressBar!!.progress = 100
+                        toast("Informaçoes de login ou senha inválidos")
+                    }
+                    completion(false, null, "Informaçoes de login ou senha inválidos!" )
                 }
             }
         })
