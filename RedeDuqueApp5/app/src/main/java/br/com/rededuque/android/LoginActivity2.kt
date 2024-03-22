@@ -34,6 +34,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.onesignal.OneSignal
 import okhttp3.Call
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 
@@ -201,7 +202,8 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         //Do authenticate
         var userAuthLogged: UserAuthData?
         var userRD: User?
-        doAuthenticate(user, passwd,  completion = { success: Boolean, user: UserAuthData? ->
+
+        doAuthenticate(user, passwd,  completion = { success: Boolean, user: UserAuthData?, error : String  ->
             if (success){
                 userAuthLogged = user
 
@@ -216,7 +218,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                 var IDUkey = userAuthLogged!!.idU
                 // Verifying on Rede Duque base if exist on RD and OneSignal
                 if (!IDUkey.isNullOrBlank()) {
-                    processRedeDuqueUrlKey(IDUkey, completion = { success: Boolean, user: User? ->
+                    processRedeDuqueUrlKey(IDUkey, completion = { success: Boolean, user: User?->
                         if (success) {
                             userRD = user!!
 
@@ -279,6 +281,12 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                                     }
                                 }
                             })
+                        } else {
+                            runOnUiThread {
+                                progressBar!!.setVisibility(View.GONE)
+                                this@LoginActivity2.progressBar!!.progress = 100
+                                toast(error)
+                            }
                         }
                     })
                 }
@@ -286,16 +294,18 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         })
     }
 
-    private fun doAuthenticate(user: String, passwd: String, completion: (success: Boolean, user: UserAuthData?) -> Unit) {
+    private fun doAuthenticate(user: String, passwd: String, completion: (success: Boolean, user: UserAuthData?, error: String) -> Unit) {
         val postparams = Json.getAuthUser(user, passwd)
 
         HttpClient.getInstance.postAsync3(mUrlAuthApp, postparams, code = CODE_AUTHETICATION , callback =  object : okhttp3.Callback {
 
             override fun onFailure(call: Call, e: IOException) {
-                progressBar!!.setVisibility(View.GONE)
-                this@LoginActivity2.progressBar!!.progress = 100
+                runOnUiThread {
+                    progressBar!!.setVisibility(View.GONE)
+                    this@LoginActivity2.progressBar!!.progress = 100
+                }
                 Log.e(this::class.simpleName, "Error Comunication" + e.message)
-                completion(false, null)
+                completion(false, null, "Error Comunication" + e.message)
             }
 
             override fun onResponse(call: Call, response: okhttp3.Response) {
@@ -308,18 +318,33 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                             var userLogged = Json.toAuthUser(userData)
                             //get data user from idU Key
                             Log.d(getString(R.string.Success_To_Login),"Login Realizado com Sucesso...")
-                            completion(true, userLogged)
+                            completion(true, userLogged, "")
+
+                        } else if (obj.has("errors")) {
+                            val jsonError = JSONArray(obj).getJSONObject(0)
+                            if (jsonError.has("message")){
+                                runOnUiThread {
+                                    progressBar!!.setVisibility(View.GONE)
+                                    this@LoginActivity2.progressBar!!.progress = 100
+                                }
+                                Log.d(getString(R.string.Success_To_Login), jsonError.getString("message"))
+                                completion(true, null, jsonError.getString("message"))
+                            }
                         } else {
                             Log.d("Error_Message","Aconteceu algum problema de dados da RedeDuque...")
-                            progressBar!!.setVisibility(View.GONE)
-                            this@LoginActivity2.progressBar!!.progress = 100
-                            completion(false, UserAuthData())
+                            runOnUiThread {
+                                progressBar!!.setVisibility(View.GONE)
+                                this@LoginActivity2.progressBar!!.progress = 100
+                            }
+                            completion(false, UserAuthData(), "Aconteceu algum problema de dados da RedeDuque...")
                         }
                     } else {
                         Log.e(getString(R.string.Error_To_Login),"Aconteceu algum problema no Login...")
-                        progressBar!!.setVisibility(View.GONE)
-                        this@LoginActivity2.progressBar!!.progress = 100
-                        completion(false, null)
+                        runOnUiThread {
+                            progressBar!!.setVisibility(View.GONE)
+                            this@LoginActivity2.progressBar!!.progress = 100
+                        }
+                        completion(false, null, "Aconteceu algum problema no Login...")
                     }
                 }
             }
