@@ -22,12 +22,12 @@ android {
         applicationId "br.com.rededuque.android"
         minSdkVersion 21
         targetSdkVersion 33
-        versionCode 35
+        versionCode 36
         //1.4.36 was the version with more native parts
         //1.4.35 was the last version with biometria
         //1.4.34 was the last version with OneSignal
         //1.4.34 was the last version without location services
-        versionName "1.5.0"
+        versionName "1.5.1"
 //        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -244,7 +244,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                                     // save url authenticated user pass
                                     saveIduPassData(mUrl, true)
 
-                                    if (hasSecurityAccessBiometric()!! == false){
+                                    if (!hasSecurityAccessBiometric()!!){
 
                                         // Process the response
                                         runOnUiThread {
@@ -292,8 +292,10 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         HttpClient.getInstance.postAsync3(mUrlAuthApp, postparams, code = CODE_AUTHETICATION , callback =  object : okhttp3.Callback {
 
             override fun onFailure(call: Call, e: IOException) {
-                completion(false, null)
+                progressBar!!.setVisibility(View.GONE)
+                this@LoginActivity2.progressBar!!.progress = 100
                 Log.e(this::class.simpleName, "Error Comunication" + e.message)
+                completion(false, null)
             }
 
             override fun onResponse(call: Call, response: okhttp3.Response) {
@@ -308,12 +310,16 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                             Log.d(getString(R.string.Success_To_Login),"Login Realizado com Sucesso...")
                             completion(true, userLogged)
                         } else {
-                            completion(false, UserAuthData())
                             Log.d("Error_Message","Aconteceu algum problema de dados da RedeDuque...")
+                            progressBar!!.setVisibility(View.GONE)
+                            this@LoginActivity2.progressBar!!.progress = 100
+                            completion(false, UserAuthData())
                         }
                     } else {
-                        completion(false, null)
                         Log.e(getString(R.string.Error_To_Login),"Aconteceu algum problema no Login...")
+                        progressBar!!.setVisibility(View.GONE)
+                        this@LoginActivity2.progressBar!!.progress = 100
+                        completion(false, null)
                     }
                 }
             }
