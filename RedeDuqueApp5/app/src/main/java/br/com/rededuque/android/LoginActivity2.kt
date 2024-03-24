@@ -539,12 +539,12 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                 }
 
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                    Toast.makeText(applicationContext, "Falha da autenticação!", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(applicationContext, "Falha da autenticação!", Toast.LENGTH_SHORT).show()
                     completion(false)
                 }
 
                 override fun onAuthenticationFailed() {
-                    Toast.makeText(applicationContext, "Falha da autenticação!", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(applicationContext, "Falha da autenticação!", Toast.LENGTH_SHORT).show()
                     completion(false)
                 }
             })
