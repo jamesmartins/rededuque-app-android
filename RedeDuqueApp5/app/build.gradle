@@ -15,13 +15,12 @@ apply plugin: 'kotlin-android'
 
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 34
 
     defaultConfig {
-
         applicationId "br.com.rededuque.android"
         minSdkVersion 21
-        targetSdkVersion 33
+        targetSdkVersion 34
         versionCode 36
         //1.4.36 was the version with more native parts
         //1.4.35 was the last version with biometria
