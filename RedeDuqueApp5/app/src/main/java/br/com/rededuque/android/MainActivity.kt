@@ -4,8 +4,10 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -26,9 +28,13 @@ import br.com.rededuque.android.parse.Json
 import br.com.rededuque.android.services.HttpClient
 import br.com.rededuque.android.services.HttpClientWeb
 import br.com.rededuque.android.utils.*
-
+import android.Manifest
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.snackbar.Snackbar
 import com.onesignal.OneSignal
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
@@ -80,10 +86,19 @@ class MainActivity : AppCompatActivity() {
      * Code used in requesting runtime permissions
      */
     private val REQUEST_PERMISSIONS_REQUEST_CODE = 34
+    private val PERMISSION_REQUEST_CODE = 100
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CoroutineScope(Dispatchers.IO).launch {
+                if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), PERMISSION_REQUEST_CODE)
+                }
+            }
+        }
 
         isConnected = Utils.isNetworkConnected(applicationContext)
 
@@ -96,6 +111,33 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permissão concedida, você pode enviar notificações
+                sendNotification()
+            } else {
+                runOnUiThread {
+                    val builder = AlertDialog.Builder(this)
+                    builder.setTitle("Atenção")
+                    builder.setMessage("Deseja ativar o acesso seguro por código de bloqueio ou leitura facial?")
+                        .setPositiveButton("Sim") { _, _ ->
+                            Toast.makeText(applicationContext, "Sim", Toast.LENGTH_LONG).show()
+                        }
+                        .setNegativeButton("Não") { _, _ ->
+                            Toast.makeText(applicationContext, "É necessário a permissão para receber as novidades e promoções!", Toast.LENGTH_LONG).show()
+                        }
+                    builder.show()
+                }
+            }
+        }
+    }
+
+    private fun sendNotification() {
+        Log.d("notificacao..." , "notificacao confirmada")
     }
 
     /**
@@ -331,11 +373,14 @@ class MainActivity : AppCompatActivity() {
                             userLogged = user!!
 
                             // Get OneSignal data
-                            var deviceState = OneSignal.getDeviceState()
-                            deviceState.let {
-                                userLogged!!.RD_TokenCelular = deviceState?.pushToken
-                                userLogged!!.RD_User_Player_Id = deviceState?.userId
-                            }
+//                            var deviceState = OneSignal.getDeviceState()
+//                            deviceState.let {
+//                                userLogged!!.RD_TokenCelular = deviceState?.pushToken
+//                                userLogged!!.RD_User_Player_Id = deviceState?.userId
+//                            }
+
+                            userLogged!!.RD_TokenCelular = OneSignal.User.pushSubscription.token
+                            userLogged!!.RD_User_Player_Id = OneSignal.User.pushSubscription.id
 
                             //Get Authentication Cookies Data
                             val emailCookie = userLogged!!.RD_userMail

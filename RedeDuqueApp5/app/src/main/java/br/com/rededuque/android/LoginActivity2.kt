@@ -19,7 +19,6 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.Toolbar
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
-import androidx.browser.trusted.ScreenOrientation
 import androidx.core.content.ContextCompat
 import br.com.rededuque.android.extensions.isValidCPF
 import br.com.rededuque.android.extensions.onlyNumbers2
@@ -94,10 +93,16 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                 promptInfo(completion = {
                     if (it){
                        if (userIDUUrlpass != null){
+                           var loginCPF = Utils.readFromPreferences(applicationContext, "cpfSAVED"," ")
+                           var loginPasswd = Utils.readFromPreferences(applicationContext, "passwdSAVED"," ")
+                           var hasUserDataSaved = txtCheckLogin!!.isChecked
                             // open activity with webview + url authenticated user pass
-                            startActivity(Intent(applicationContext, WebViewMainActivity::class.java)
-                                .putExtra("URL_LOAD_CONTENT", userIDUUrlpass.trim()))
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                           doLogin(loginCPF.toString(), loginPasswd.toString(), hasUserDataSaved)
+
+
+//                            startActivity(Intent(applicationContext, WebViewMainActivity::class.java)
+//                                .putExtra("URL_LOAD_CONTENT", userIDUUrlpass.trim()))
+//                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
                         } else {
                             toast("Digite novamente os dados do login com manter os dados salvos!")
                         }
@@ -119,6 +124,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
             progressBar!!.progress = 0
             progressBar!!.visibility = View.GONE
         }
+        // Execute Pre-saved authentication
         readFromAuthCookies()
     }
 
@@ -147,7 +153,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
             var mUrl = baseURL + mUrlCadastro
             startActivity(Intent(applicationContext, WebViewActivity::class.java)
                 .putExtra("URL_LOAD_CONTENT", mUrl)
-                .putExtra("URL_LOAD_TITLE","Codastro"))
+                .putExtra("URL_LOAD_TITLE","Cadastro"))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
@@ -183,12 +189,12 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         }
     }
 
+    // Login process and send data to rededuque backend
     private fun doLogin(user : String, passwd: String, hasUserDataSaved: Boolean) {
         if (!isConnected) {
             toast("Falta de Conexão!", Toast.LENGTH_SHORT)
             return
         }
-
         progressBar!!.visibility = View.VISIBLE
         this@LoginActivity2.progressBar!!.progress = 0
 
@@ -196,7 +202,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         if (hasUserDataSaved){
             saveDataUser(user, passwd)
         } else {
-            saveDataUser("", "")
+            saveDataUser("", "", false)
         }
 
         //Do authenticate
@@ -206,14 +212,11 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         doAuthenticate(user, passwd,  completion = { success: Boolean, user: UserAuthData?, error : String  ->
             if (success){
                 userAuthLogged = user
-
                 // Get RedeDuque Login User token data
-                var IDLkey = userAuthLogged!!.idL
-                if (!IDLkey.isNullOrBlank()){
+                if (!userAuthLogged!!.idL.isNullOrBlank() && !userAuthLogged!!.key.isNullOrBlank()){
                     //Save Auth Token Cookies
-                    saveAuthIDLToken(IDLkey)
+                    saveAuthLoggedUser(userAuthLogged!!.idL, userAuthLogged!!.key)
                 }
-
                 // Get RedeDuque Personal User Logged data
                 var IDUkey = userAuthLogged!!.idU
                 // Verifying on Rede Duque base if exist on RD and OneSignal
@@ -222,22 +225,23 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
                         if (success) {
                             userRD = user!!
 
-                            // Get OneSignal data
-                            var deviceState = OneSignal.getDeviceState()
-                            deviceState.let {
-                                userRD!!.RD_TokenCelular = deviceState?.pushToken
-                                userRD!!.RD_User_Player_Id = deviceState?.userId
-                            }
+                            // Get OneSignal data (2023)
+                            // Methods getDeviceState() is deprecated
+//                            var deviceState = OneSignal.getDeviceState()
+//                           deviceState.let {
+//                                userRD!!.RD_TokenCelular = deviceState?.pushToken
+//                                userRD!!.RD_User_Player_Id = deviceState?.userId
+//                            }
 
-                            //Get Authentication Cookies Data
-                            val emailCookie = userRD!!.RD_userMail
-                            val passwdCookie = userRD!!.RD_userpass
+                            // New methods to get player Id and token data from OneSignal
+                            // 08/2024
+                            userRD!!.RD_TokenCelular = OneSignal.User.pushSubscription.token
+                            userRD!!.RD_User_Player_Id = OneSignal.User.pushSubscription.id
 
-                            //Save Auth Cookies
-                            saveAuthCookies(emailCookie, passwdCookie)
+                            //Save Auth Cookies Data
+                            saveAuthCookies(userRD,IDUkey)
 
                             //Send OenSignal Data to RedeDuque
-
                             sendOneSignalDataToRedeDuque(userRD!!, completion = {
                                 if (it) {
                                     Log.d(getString(R.string.Data_Sent_to_RedeDuque), "Dados OneSignal Enviados para Rede Duque!")
@@ -376,18 +380,22 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
             Snackbar.LENGTH_INDEFINITE).setAction(getString(actionStringId), listener).show()
     }
 
-    private fun saveAuthCookies(login: String?, passwd: String?) {
-        if (login != null && passwd != null) {
-            Utils.saveToPreference(applicationContext, "emailSAVED", login.trim { it <= ' ' })
-            Utils.saveToPreference(applicationContext, "passwdSAVED", passwd.trim { it <= ' ' })
+    private fun saveAuthCookies(user : User?, iduKey: String?) {
+        if (user!!.RD_userMail != null && user!!.RD_userpass != null) {
+            Utils.saveToPreference(applicationContext, "userId", user!!.RD_userId!!.trim { it <= ' ' })
+            Utils.saveToPreference(applicationContext, "emailSAVED", user!!.RD_userMail!!.trim { it <= ' ' })
+            Utils.saveToPreference(applicationContext, "passwdSAVED", user!!.RD_userpass!!.trim { it <= ' ' })
+            Utils.saveToPreference(applicationContext, "playerIdSAVED", user!!.RD_User_Player_Id!!.trim { it <= ' ' })
+            Utils.saveToPreference(applicationContext, "tokenPhoneSAVED", user!!.RD_TokenCelular!!.trim { it <= ' ' })
+            Utils.saveToPreference(applicationContext, "IDUkeySAVED", iduKey!!.trim { it <= ' ' })
         }
     }
 
-    private fun saveDataUser(CPF: String?, passwd : String?) {
+    private fun saveDataUser(CPF: String?, passwd : String?, loggedDataSAVED : Boolean = true) {
         if (CPF != null && passwd != null) {
             Utils.saveToPreference(applicationContext, "cpfSAVED", CPF.trim { it <= ' ' })
             Utils.saveToPreference(applicationContext, "passwdSAVED", passwd.trim { it <= ' ' })
-            Utils.saveToPreference(applicationContext, "loggedDataSAVED", true)
+            Utils.saveToPreference(applicationContext, "loggedDataSAVED", loggedDataSAVED)
         }
     }
 
@@ -423,6 +431,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
             editLogin!!.setText(loginCPF)
             var loginPasswd = Utils.readFromPreferences(applicationContext, "passwdSAVED"," ")
             editPasswd!!.setText(loginPasswd!!, TextView.BufferType.EDITABLE)
+
         }
         //Verify if exist biometric preferences saved
         if (hasSecurityAccessBiometric()!!){
@@ -431,9 +440,10 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
 
     }
 
-    private fun saveAuthIDLToken(idlToken: String?) {
-        if (idlToken != null) {
+    private fun saveAuthLoggedUser(idlToken: String?, userKey: String?) {
+        if (idlToken != null && userKey != null) {
             Utils.saveToPreference(applicationContext, "tokenSAVED", idlToken.trim { it <= ' ' })
+            Utils.saveToPreference(applicationContext, "userKeySAVED", userKey.trim { it <= ' ' })
         }
     }
 

@@ -1,18 +1,24 @@
 package br.com.rededuque.android
 
+import android.app.Activity
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.MenuItem
 import android.view.View
-import android.webkit.*
+import android.webkit.JavascriptInterface
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import br.com.rededuque.android.model.User
 import br.com.rededuque.android.utils.Utils
@@ -30,8 +36,14 @@ class WebViewMainActivity : AppCompatActivity() {
         var mUrlLoading = intent.extras!!.getString("URL_LOAD_CONTENT")
 
         initViews()
-
         loadContent(mUrlLoading!!)
+    }
+
+    private fun teste(){
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.setType("text/plain")
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "teste")
+        startActivity(Intent.createChooser(shareIntent, "Compartilhar via"))
     }
 
     private fun loadContent(url: String) {
@@ -54,18 +66,30 @@ class WebViewMainActivity : AppCompatActivity() {
         mWebView!!.settings.javaScriptEnabled = true
         mWebView!!.settings.cacheMode = WebSettings.LOAD_NO_CACHE
         mWebView!!.settings.loadsImagesAutomatically = true
+        mWebView!!.settings.domStorageEnabled = true
+        mWebView!!.settings.allowFileAccess = true
+        mWebView!!.settings.allowContentAccess = true
+        mWebView!!.settings.mediaPlaybackRequiresUserGesture = false
+        mWebView!!.settings.useWideViewPort = true
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR_MR1) {
             mWebView!!.settings.loadWithOverviewMode = true
         }
-        mWebView!!.settings.useWideViewPort = true
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CUPCAKE) {
             mWebView!!.settings.builtInZoomControls = false
         }
-        mWebView!!.settings.domStorageEnabled = true
         mWebView!!.webChromeClient = WebChromeClient()
         mWebView!!.webViewClient = CustomWebViewClientv2()
+        mWebView!!.addJavascriptInterface(WebAppInterface(this@WebViewMainActivity), "Android")
+    }
 
-        //WebView.setWebContentsDebuggingEnabled(true);
+    class WebAppInterface(private val context: Activity ) {
+        @JavascriptInterface
+        fun shareContent(msg : String) {
+            val shareIntent = Intent(Intent.ACTION_SEND)
+            shareIntent.setType("text/plain")
+            shareIntent.putExtra(Intent.EXTRA_TEXT, msg)
+            context.startActivity(Intent.createChooser(shareIntent, "Compartilhar via"))
+        }
     }
 
     inner class CustomWebViewClientv2 : WebViewClient() {
@@ -86,6 +110,31 @@ class WebViewMainActivity : AppCompatActivity() {
             var userLogged: User? = null
 
             super.onPageFinished(webview, url)
+        }
+
+        override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest): Boolean {
+            val uri = request.url
+            return handleLinkClick(uri)
+        }
+
+        private fun handleLinkClick(uri: Uri): Boolean {
+            // Exemplo de uma URL específica que você quer interceptar
+//            if (uri.toString().contains("amigos.do")) {
+//                // Aqui, você pode realizar uma ação específica em vez de abrir o link
+//                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://outrosite.com"))
+//                startActivity(intent)
+//                return true // Intercepta o link, evitando que ele abra no WebView
+//            }
+
+            // Para links com "javascript:void(0)" do botao compartilhar
+            if (uri.scheme == "javascript:void(0)") {
+                val intent = Intent(Intent.ACTION_VIEW, uri)
+                startActivity(intent)
+                return true // Intercepta o link, evitando que ele abra no WebView
+            }
+
+            // Permite que o WebView carregue o link normalmente
+            return false
         }
 
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
@@ -131,6 +180,21 @@ class WebViewMainActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
             }
+
+            // Share by SHARE CODE
+//            if (url.contains("amigos.do")) {
+//                try {
+//                    // Configura a intent de compartilhamento
+//                    val shareIntent = Intent(Intent.ACTION_SEND)
+//                    shareIntent.setType("text/plain")
+//                    shareIntent.putExtra(Intent.EXTRA_TEXT, url.toString())
+//
+//                    startActivity(Intent.createChooser(shareIntent, "Compartilhar via"))
+//                    return true
+//                } catch (ex : Exception){
+//
+//                }
+//            }
             return true
         }
     }

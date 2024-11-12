@@ -21,13 +21,15 @@ android {
         applicationId "br.com.rededuque.android"
         minSdkVersion 21
         targetSdkVersion 34
-        versionCode 37
+        versionCode 42
+        //1.7.3 version with js webinterface
+        //1.7.1 version with permission post notifications and v>=13
+        //1.7.00 version with new Firebase/OneSignal integrations
         //1.4.37 version upgrade to 34 sdk
         //1.4.36 was the version with more native parts
         //1.4.35 was the last version with biometria
-        //1.4.34 was the last version with OneSignal
-        //1.4.34 was the last version without location services
-        versionName "1.6.0"
+        //1.4.34 was the last version with OneSignal without location services
+        versionName "1.7.3"
 //        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -68,7 +70,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
 
     // Push Notification Service
-    implementation 'com.onesignal:OneSignal:[4.0.0, 4.99.99]'
+//    implementation 'com.onesignal:OneSignal:[4.0.0, 4.99.99]'
+    implementation 'com.onesignal:OneSignal:[5.0.0, 5.99.99]'
 
     // HttpClient Component
     implementation 'com.squareup.okhttp3:okhttp:4.9.0'

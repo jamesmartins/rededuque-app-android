@@ -21,6 +21,10 @@
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
+    <string name="notification_permission_title">Permissão de Notificação</string>
+    <string name="notification_permission_body">O aplicativo precisa da permissão para exibir notificações, assim você ficará por dentro das novidades e poderá controlar os áudios da lição mesmo fora da aplicação. Deseja habilitar agora?</string>
+    <string name="yes">Sim</string>
+    <string name="no">Não</string>
 
     <!--    <string name="Data_Sent_to_RedeDuque">Dados_OneSignal_Enviados</string>    -->
 
