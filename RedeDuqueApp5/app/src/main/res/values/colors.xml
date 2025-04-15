@@ -5,9 +5,6 @@
     <color name="colorAccent">#3F51B5</color>
     <color name="corbotao">#1f398d</color>
     <color name="corbotaoOn">#5dade2</color>
-
-
-
     <color name="text_secundary_default_color">#121D7B</color>
     <color name="text_recovery_passwd">#18BC9C</color>
     <color name="text_color_default">#435156</color>
@@ -20,6 +17,5 @@
     <color name="text_color_primary">#555555</color>
     <color name="text_color_second">#AAAAAA</color>
     <color name="transparent_color">@android:color/transparent</color>
-
     <color name="accent_translucent">#D7D7D7</color>
 </resources>
