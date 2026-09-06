@@ -18,8 +18,11 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import br.com.rededuque.android.model.User
 import br.com.rededuque.android.utils.Utils
 
@@ -30,8 +33,20 @@ class WebViewMainActivity : AppCompatActivity() {
     private lateinit var mToolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_webview)
+
+        val rootLayout = findViewById<View>(R.id.main_webview_container)
+        rootLayout?.let {
+            ViewCompat.setOnApplyWindowInsetsListener(it) { view, insets ->
+                val systemBars = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+                )
+                view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+                insets
+            }
+        }
 
         var mUrlLoading = intent.extras!!.getString("URL_LOAD_CONTENT")
 

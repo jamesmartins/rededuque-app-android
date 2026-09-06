@@ -5,14 +5,17 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.util.TypedValue
 import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
@@ -20,6 +23,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import br.com.rededuque.android.extensions.isValidCPF
 import br.com.rededuque.android.extensions.onlyNumbers2
 import br.com.rededuque.android.extensions.toBase64
@@ -52,6 +57,7 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
     private lateinit var mToolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login3)
 
@@ -60,6 +66,32 @@ class LoginActivity2 : AppCompatActivity(), TextWatcher {
         this.supportActionBar?.title = "Faça seu login"
         this.supportActionBar?.setDisplayHomeAsUpEnabled(true)
         this.supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
+
+        val rootLayout = findViewById<View>(R.id.login_container)
+        val nestedScrollView = findViewById<View>(R.id.nested_scroll_login)
+        rootLayout?.let {
+            ViewCompat.setOnApplyWindowInsetsListener(it) { view, insets ->
+                val systemBars = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+                )
+                mToolbar.setPadding(0, systemBars.top, 0, 0)
+                val lp = mToolbar.layoutParams
+                val defaultActionBarHeight = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, 56f, resources.displayMetrics
+                ).toInt()
+                lp.height = systemBars.top + defaultActionBarHeight
+                mToolbar.layoutParams = lp
+
+                val scrollLp = nestedScrollView?.layoutParams as? ViewGroup.MarginLayoutParams
+                if (scrollLp != null) {
+                    scrollLp.topMargin = lp.height
+                    nestedScrollView.layoutParams = scrollLp
+                }
+
+                view.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom)
+                insets
+            }
+        }
 
         isConnected = Utils.isNetworkConnected(applicationContext)
 

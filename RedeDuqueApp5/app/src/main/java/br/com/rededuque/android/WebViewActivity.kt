@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.TypedValue
@@ -14,6 +15,8 @@ import android.webkit.*
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.NestedScrollView
 import br.com.rededuque.android.extensions.toast
 import br.com.rededuque.android.model.User
@@ -27,8 +30,25 @@ class WebViewActivity : AppCompatActivity() {
     private lateinit var mNestScroll: NestedScrollView
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_webview2)
+
+        val rootLayout = findViewById<View>(R.id.login_container)
+        rootLayout?.let {
+            ViewCompat.setOnApplyWindowInsetsListener(it) { view, insets ->
+                val systemBars = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+                )
+                val tv = TypedValue()
+                var actionBarHeight = 0
+                if (theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+                    actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, resources.displayMetrics)
+                }
+                view.setPadding(systemBars.left, systemBars.top + actionBarHeight, systemBars.right, systemBars.bottom)
+                insets
+            }
+        }
 
         var mUrlLoading = intent.extras!!.getString("URL_LOAD_CONTENT")
         var mUrlTitle = intent.extras!!.getString("URL_LOAD_TITLE")
